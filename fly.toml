@@ -9,6 +9,7 @@ primary_region = "iad"
   RESUMA_TRUST_PROXY = "1"
   RESUMA_TRUSTED_PROXY_CIDRS = "fdaa::/16"
   RESUMA_ADDR = "0.0.0.0:8080"
+  RESUMA_DATA_DIR = "/data"
   SITE_URL = "https://placaqr.fly.dev"
   CARGO_MANIFEST_DIR = "/app"
 

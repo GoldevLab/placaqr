@@ -8,9 +8,13 @@ RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/
 WORKDIR /app
 COPY --from=builder /app/target/release/qr3d /app/server
 COPY --from=builder /app/public /app/public
+# Production rate limits write under RESUMA_DATA_DIR. The process runs as
+# non-root, so /app/.resuma is not writable and every #[server] action 500s.
+RUN mkdir -p /data && chown 65532:65532 /data
 ENV RESUMA_ENV=production
 ENV RESUMA_ADDR=0.0.0.0:8080
 ENV RESUMA_TRUST_PROXY=1
+ENV RESUMA_DATA_DIR=/data
 ENV CARGO_MANIFEST_DIR=/app
 EXPOSE 8080
 USER 65532:65532
