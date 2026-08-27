@@ -15,7 +15,7 @@ export function createViewer(canvas) {
   renderer.toneMappingExposure = 1.05;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xeef3f0);
+  scene.background = new THREE.Color(0xf4f3f8);
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 2000);
   const target = new THREE.Vector3(0, 12, 0);
@@ -23,7 +23,7 @@ export function createViewer(canvas) {
   let pitch = 0.48;
   let dist = 120;
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0x8aa396, 0.95);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x9a96b4, 0.95);
   scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, 1.35);
   key.position.set(55, 90, 40);
@@ -36,14 +36,14 @@ export function createViewer(canvas) {
   key.shadow.camera.top = 90;
   key.shadow.camera.bottom = -90;
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xd7efe4, 0.45);
+  const fill = new THREE.DirectionalLight(0xe4e0f5, 0.45);
   fill.position.set(-40, 30, -50);
   scene.add(fill);
 
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(90, 64),
     new THREE.MeshStandardMaterial({
-      color: 0xd8e3dd,
+      color: 0xe4e1ee,
       roughness: 1,
       metalness: 0,
     }),

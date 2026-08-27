@@ -1,16 +1,18 @@
 :root {
-  --bg: #f4f7f5;
+  --bg: #f4f3f8;
   --bg-elev: #ffffff;
-  --bg-soft: #eef3f0;
-  --fg: #14221c;
-  --muted: #5c6f66;
-  --line: #d7e2dc;
-  --accent: #0d9a68;
-  --accent-dim: #0a7a52;
-  --accent-soft: #e3f7ee;
-  --warn: #b45309;
-  --danger: #c24141;
-  --shadow: 0 1px 2px rgba(20, 34, 28, 0.05), 0 18px 40px rgba(20, 34, 28, 0.07);
+  --bg-soft: #eceaf3;
+  --fg: #12111a;
+  --muted: #5c5a6a;
+  --line: #ddd9e6;
+  --accent: #5b4dff;
+  --accent-dim: #4338ca;
+  --accent-soft: #edebff;
+  --warn: #c2410c;
+  --danger: #e11d48;
+  --shadow:
+    0 1px 2px color-mix(in oklab, var(--fg) 6%, transparent),
+    0 18px 44px color-mix(in oklab, var(--fg) 8%, transparent);
   --radius: 22px;
   --font: "Figtree", system-ui, sans-serif;
   --display: "Outfit", "Figtree", sans-serif;
@@ -30,20 +32,21 @@ html {
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   font-family: var(--font);
   color: var(--fg);
   accent-color: var(--accent);
+  scrollbar-color: var(--line) var(--bg);
   background:
-    radial-gradient(920px 520px at 6% -12%, rgba(13, 154, 104, 0.14), transparent 58%),
-    radial-gradient(640px 380px at 100% 0%, rgba(13, 154, 104, 0.08), transparent 52%),
+    radial-gradient(920px 520px at 6% -12%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 58%),
+    radial-gradient(640px 380px at 100% 0%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 52%),
     var(--bg);
 }
 
 .app {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -71,8 +74,8 @@ body {
   width: 1.7rem;
   height: 1.7rem;
   border-radius: 9px;
-  background: linear-gradient(145deg, #22c98c, var(--accent-dim));
-  box-shadow: 0 0 0 4px rgba(13, 154, 104, 0.12);
+  background: linear-gradient(145deg, color-mix(in oklab, var(--accent) 55%, white), var(--accent-dim));
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .brand-name {
@@ -137,21 +140,21 @@ main {
   transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
-.btn:active {
+.btn:active:not(:disabled) {
   transform: translateY(0);
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, #12a972, var(--accent));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 82%, white), var(--accent));
   color: #fff;
-  box-shadow: 0 10px 22px rgba(13, 154, 104, 0.24);
+  box-shadow: 0 10px 22px color-mix(in oklab, var(--accent) 32%, transparent);
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background: var(--accent-dim);
 }
 
@@ -195,7 +198,7 @@ main {
 .tool-panel,
 .preview-panel {
   background: var(--bg-elev);
-  border: 1px solid color-mix(in srgb, var(--line) 80%, white);
+  border: 1px solid color-mix(in oklab, var(--line) 80%, white);
   border-radius: var(--radius);
   padding: 1.45rem 1.4rem 1.35rem;
   box-shadow: var(--shadow);
@@ -205,7 +208,7 @@ main {
   position: sticky;
   top: 0.85rem;
   align-self: start;
-  max-height: calc(100vh - 1.5rem);
+  max-height: calc(100dvh - 1.5rem);
   overflow: auto;
 }
 
@@ -230,7 +233,7 @@ main {
   border: 0;
   margin: 0 0 1.45rem;
   padding: 0 0 1.35rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 85%, white);
+  border-bottom: 1px solid color-mix(in oklab, var(--line) 85%, white);
 }
 
 .field-block:last-of-type {
@@ -348,7 +351,7 @@ main {
 
 .field input:hover,
 .field select:hover {
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--line));
   background: var(--bg-elev);
 }
 
@@ -451,7 +454,7 @@ main {
 .chip.is-active {
   color: var(--fg);
   background: var(--bg-elev);
-  box-shadow: 0 1px 2px rgba(20, 34, 28, 0.08), 0 0 0 1px rgba(20, 34, 28, 0.04);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--fg) 8%, transparent), 0 0 0 1px color-mix(in oklab, var(--fg) 5%, transparent);
 }
 
 .object-cards {
@@ -495,14 +498,14 @@ main {
 }
 
 .object-card:hover {
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
   background: var(--bg-elev);
 }
 
 .object-card:has(input:checked) {
   background: var(--accent-soft);
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 28%, transparent);
 }
 
 .obj-ico {
@@ -583,11 +586,11 @@ main {
   height: 1.05rem;
   border: 2px solid currentColor;
   border-radius: 3px;
-  background: color-mix(in srgb, currentColor 22%, transparent);
+  background: color-mix(in oklab, currentColor 22%, transparent);
 }
 
 .object-card:has(input:checked) .obj-ico-tile {
-  background: color-mix(in srgb, currentColor 28%, transparent);
+  background: color-mix(in oklab, currentColor 28%, transparent);
 }
 
 .check-row {
@@ -712,7 +715,7 @@ main {
 }
 
 .logo-btn:hover {
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
 }
 
 .logo-thumb {
@@ -919,7 +922,7 @@ main {
   min-width: 2.7rem;
   min-height: 2.7rem;
   padding: 0;
-  border: 1px solid rgba(20, 34, 28, 0.14);
+  border: 1px solid color-mix(in oklab, var(--fg) 14%, transparent);
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
@@ -927,7 +930,7 @@ main {
   font-size: 0;
   line-height: 0;
   flex: 0 0 auto;
-  background-color: #d7e2dc;
+  background-color: var(--line);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
 }
 
@@ -940,19 +943,19 @@ main {
   pointer-events: none;
 }
 
-.swatch--light { background-image: linear-gradient(90deg, #f4f7f5 50%, #0c1210 50%); }
-.swatch--dark { background-image: linear-gradient(90deg, #0c1210 50%, #f4f7f5 50%); }
+.swatch--light { background-image: linear-gradient(90deg, #fafafa 50%, #12111a 50%); }
+.swatch--dark { background-image: linear-gradient(90deg, #12111a 50%, #fafafa 50%); }
 .swatch--cream { background-image: linear-gradient(90deg, #fff8e7 50%, #1a3a5c 50%); }
-.swatch--mint { background-image: linear-gradient(90deg, #e8f5f0 50%, #0d3b2f 50%); }
+.swatch--indigo { background-image: linear-gradient(90deg, #eef0ff 50%, #1e1b4b 50%); }
 
-.swatch--light .swatch-a { background: #f4f7f5; }
-.swatch--light .swatch-b { background: #0c1210; }
-.swatch--dark .swatch-a { background: #0c1210; }
-.swatch--dark .swatch-b { background: #f4f7f5; }
+.swatch--light .swatch-a { background: #fafafa; }
+.swatch--light .swatch-b { background: #12111a; }
+.swatch--dark .swatch-a { background: #12111a; }
+.swatch--dark .swatch-b { background: #fafafa; }
 .swatch--cream .swatch-a { background: #fff8e7; }
 .swatch--cream .swatch-b { background: #1a3a5c; }
-.swatch--mint .swatch-a { background: #e8f5f0; }
-.swatch--mint .swatch-b { background: #0d3b2f; }
+.swatch--indigo .swatch-a { background: #eef0ff; }
+.swatch--indigo .swatch-b { background: #1e1b4b; }
 
 .swatch:hover {
   transform: translateY(-1px);
@@ -982,7 +985,7 @@ main {
 
 .color-pick:hover {
   background: var(--bg-elev);
-  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--line));
 }
 
 .color-pick-meta {
@@ -1011,7 +1014,7 @@ main {
   overflow: hidden;
   flex: 0 0 auto;
   background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(20, 34, 28, 0.14), 0 1px 2px rgba(20, 34, 28, 0.06);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--fg) 14%, transparent), 0 1px 2px color-mix(in oklab, var(--fg) 6%, transparent);
 }
 
 .color-well input[type="color"] {
@@ -1081,7 +1084,7 @@ main {
 .tab.is-active {
   color: var(--fg);
   background: var(--bg-elev);
-  box-shadow: 0 1px 3px rgba(20, 34, 28, 0.08);
+  box-shadow: 0 1px 3px color-mix(in oklab, var(--fg) 8%, transparent);
 }
 
 .preview-stage {
@@ -1089,7 +1092,7 @@ main {
   border-radius: 18px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 38%, #ffffff 0%, #eef3f0 72%);
+    radial-gradient(circle at 50% 38%, #ffffff 0%, var(--bg-soft) 72%);
   border: 1px solid var(--line);
   min-height: 0;
   display: grid;
@@ -1117,7 +1120,7 @@ main {
   display: block;
   border-radius: 10px;
   background: #fff;
-  box-shadow: 0 8px 24px rgba(20, 34, 28, 0.08);
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--fg) 8%, transparent);
 }
 
 .preview-stage[data-stage="3d"] {
@@ -1152,7 +1155,7 @@ main {
   border-radius: 12px;
   cursor: grab;
   touch-action: none;
-  background: #eef3f0;
+  background: var(--bg-soft);
 }
 
 #view3d-canvas:active {
@@ -1222,7 +1225,7 @@ main {
 }
 
 .ad-slot {
-  border: 1px dashed color-mix(in srgb, var(--muted) 35%, transparent);
+  border: 1px dashed color-mix(in oklab, var(--muted) 35%, transparent);
   background: repeating-linear-gradient(
     -45deg,
     transparent,
@@ -1279,11 +1282,11 @@ dialog {
   color: var(--fg);
   padding: 0;
   max-width: min(92vw, 380px);
-  box-shadow: 0 24px 64px rgba(20, 34, 28, 0.16);
+  box-shadow: 0 24px 64px color-mix(in oklab, var(--fg) 18%, transparent);
 }
 
 dialog::backdrop {
-  background: rgba(20, 34, 28, 0.38);
+  background: color-mix(in oklab, var(--fg) 42%, transparent);
   backdrop-filter: blur(4px);
 }
 

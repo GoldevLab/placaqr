@@ -86,7 +86,7 @@ fn seo_kit() -> SeoKit {
             "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
             "description": "Generator for 3D-printable QR codes (3MF and STL)"
         }));
-    kit.theme_color = Some("#f6f8f6".into());
+    kit.theme_color = Some("#f4f3f8".into());
     kit.author = "PlacaQR".into();
     kit.llms_sections = vec![
         (

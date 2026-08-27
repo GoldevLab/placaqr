@@ -138,8 +138,8 @@ pub fn placaqr_tool() -> View {
             logo_png: g('[data-bind="logo_png"]')?.value || "",
             size_mm: Math.min(120, Math.max(30, numOr('[data-bind="size_mm"]', 55))),
             relief_mm: Math.min(2.5, Math.max(0.4, numOr('[data-bind="relief_mm"]', 0.8))),
-            color_base: g('[data-bind="color_base"]')?.value || "#f4f7f5",
-            color_fg: g('[data-bind="color_fg"]')?.value || "#0c1210",
+            color_base: g('[data-bind="color_base"]')?.value || "#fafafa",
+            color_fg: g('[data-bind="color_fg"]')?.value || "#12111a",
             module_shape: root.querySelector("[data-shape].is-active")?.dataset.shape
                 || g('[data-bind="module_shape"]')?.value
                 || "square",
@@ -1082,16 +1082,16 @@ pub fn placaqr_tool() -> View {
                         "Colors"
                     </legend>
                     <div class="swatch-row" role="group" aria-label="Color presets">
-                        <button type="button" class="swatch swatch--light is-active" data-colors="#f4f7f5,#0c1210" title="Light / black" aria-label="Light base, black QR" aria-pressed="true">
+                        <button type="button" class="swatch swatch--light is-active" data-colors="#fafafa,#12111a" title="Light / ink" aria-label="Light base, ink QR" aria-pressed="true">
                             <span class="swatch-a">{"\u{00a0}"}</span><span class="swatch-b">{"\u{00a0}"}</span>
                         </button>
-                        <button type="button" class="swatch swatch--dark" data-colors="#0c1210,#f4f7f5" title="Black / light" aria-label="Black base, light QR" aria-pressed="false">
+                        <button type="button" class="swatch swatch--dark" data-colors="#12111a,#fafafa" title="Ink / light" aria-label="Ink base, light QR" aria-pressed="false">
                             <span class="swatch-a">{"\u{00a0}"}</span><span class="swatch-b">{"\u{00a0}"}</span>
                         </button>
                         <button type="button" class="swatch swatch--cream" data-colors="#fff8e7,#1a3a5c" title="Cream / blue" aria-label="Cream base, blue QR" aria-pressed="false">
                             <span class="swatch-a">{"\u{00a0}"}</span><span class="swatch-b">{"\u{00a0}"}</span>
                         </button>
-                        <button type="button" class="swatch swatch--mint" data-colors="#e8f5f0,#0d3b2f" title="Mint / green" aria-label="Mint base, green QR" aria-pressed="false">
+                        <button type="button" class="swatch swatch--indigo" data-colors="#eef0ff,#1e1b4b" title="Lilac / navy" aria-label="Lilac base, navy QR" aria-pressed="false">
                             <span class="swatch-a">{"\u{00a0}"}</span><span class="swatch-b">{"\u{00a0}"}</span>
                         </button>
                     </div>
@@ -1103,7 +1103,7 @@ pub fn placaqr_tool() -> View {
                                 <span class="color-pick-help" data-for="3d" hidden="">"Object body"</span>
                             </span>
                             <span class="color-well">
-                                <input data-bind="color_base" type="color" value="#f4f7f5" />
+                                <input data-bind="color_base" type="color" value="#fafafa" />
                             </span>
                         </label>
                         <label class="color-pick">
@@ -1113,7 +1113,7 @@ pub fn placaqr_tool() -> View {
                                 <span class="color-pick-help" data-for="3d" hidden="">"Raised code"</span>
                             </span>
                             <span class="color-well">
-                                <input data-bind="color_fg" type="color" value="#0c1210" />
+                                <input data-bind="color_fg" type="color" value="#12111a" />
                             </span>
                         </label>
                     </div>
