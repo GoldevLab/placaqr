@@ -111,7 +111,35 @@ async fn main() -> std::io::Result<()> {
         app = app.static_asset("/ads.txt", body, "text/plain; charset=utf-8");
     }
     app.with_public_dir(public)
-        .without_pwa()
+        .with_pwa(FlowPwaConfig {
+            name: "PlacaQR".into(),
+            short_name: "PlacaQR".into(),
+            description: "Make a dual-color 3MF or STL QR for stands, tiles, keychains, and plaques."
+                .into(),
+            theme_color: "#5b4dff".into(),
+            background_color: "#f4f3f8".into(),
+            start_url: "/".into(),
+            scope: "/".into(),
+            cache_version: "pqr-1".into(),
+            display: "standalone".into(),
+            orientation: "any".into(),
+            lang: "en".into(),
+            icon_char: Some("Q".into()),
+            precache_paths: vec![
+                "/css/placaqr.css".into(),
+                "/js/placaqr-ui.js".into(),
+            ],
+            shortcuts: vec![PwaShortcut {
+                name: "New QR".into(),
+                short_name: "Home".into(),
+                url: "/".into(),
+            }],
+            offline_title: "You're offline".into(),
+            offline_message:
+                "PlacaQR needs a connection to build and download your QR. Reconnect and try again."
+                    .into(),
+            manifest_icons: Vec::new(),
+        })
         .not_found(placa_not_found)
         .auto_pages(
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/pages"),
