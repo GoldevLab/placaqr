@@ -425,6 +425,11 @@ main {
   border-radius: 16px;
 }
 
+.seg[aria-label="Content type"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.4rem, 1fr));
+}
+
 .chip {
   appearance: none;
   border: 0;
@@ -1224,41 +1229,72 @@ main {
   padding: 0.55rem 0 0;
 }
 
-.ad-slot {
+.ad-unit {
+  display: grid;
+  place-items: center;
+  gap: 0.2rem;
+  overflow: clip;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.ad-unit.is-placeholder {
   border: 1px dashed color-mix(in oklab, var(--muted) 35%, transparent);
   background: repeating-linear-gradient(
     -45deg,
     transparent,
     transparent 8px,
-    rgba(92, 111, 102, 0.05) 8px,
-    rgba(92, 111, 102, 0.05) 16px
+    color-mix(in oklab, var(--muted) 6%, transparent) 8px,
+    color-mix(in oklab, var(--muted) 6%, transparent) 16px
   );
-  color: var(--muted);
-  display: grid;
-  place-items: center;
-  gap: 0.2rem;
-  text-align: center;
-  border-radius: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
 }
 
-.ad-slot small {
+.ad-unit.is-live {
+  background: color-mix(in oklab, var(--bg-soft) 70%, transparent);
+}
+
+.ad-unit__label {
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ad-unit__hint {
   font-weight: 500;
   letter-spacing: 0;
   font-size: 0.72rem;
   opacity: 0.8;
 }
 
-.ad-banner {
-  min-height: 90px;
-  margin: 1.25rem 0;
+.ad-unit ins.adsbygoogle {
+  display: block;
+  inline-size: 100%;
+  min-block-size: inherit;
 }
 
-.ad-popup {
-  min-height: 280px;
-  width: min(100%, 320px);
-  margin: 0 auto;
+.ad-unit--banner {
+  min-block-size: 90px;
+  margin-block: 1.25rem 0;
+  inline-size: 100%;
+}
+
+.ad-unit--footer {
+  min-block-size: 90px;
+  margin-block-end: 1.15rem;
+  inline-size: 100%;
+}
+
+.ad-unit--download {
+  min-block-size: 250px;
+  min-inline-size: min(100%, 300px);
+  max-inline-size: 336px;
+  margin-inline: auto;
+}
+
+.ad-unit--toast {
+  min-block-size: 100px;
+  min-inline-size: min(100%, 320px);
 }
 
 .site-footer {
@@ -1326,16 +1362,12 @@ dialog::backdrop {
   color: var(--muted);
   border-radius: 12px;
   padding: 0.75rem 2.2rem 0.75rem 0.9rem;
-  min-width: 180px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  min-inline-size: min(calc(100vw - 2rem), 336px);
   box-shadow: var(--shadow);
 }
 
 .toast-ad:popover-open {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
   gap: 0.5rem;
 }
 

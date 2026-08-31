@@ -14,8 +14,8 @@ fn routes(&self) -> &'static [(&'static str, &'static str)] {
 
 fn layout_for(&self, pattern: &str) -> &'static [&'static str] {
 match pattern {
-                    "/" => &[],
-                    _ => &[],
+                    "/" => &["/"],
+                    _ => &["/"],
 }
 }
 

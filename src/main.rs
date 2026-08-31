@@ -1,6 +1,7 @@
 //! PlacaQR — 3D-printable QR generator in pure Rust (Resuma Flow).
 
 mod actions;
+mod ads;
 mod design;
 mod export3d;
 mod logo;
@@ -15,31 +16,6 @@ use pages::PagesRegistry;
 use resuma::prelude::*;
 use resuma::SeoKit;
 use serde_json::json;
-
-#[layout("/")]
-fn RootLayout() -> View {
-    view! {
-        <div class="app">
-            <header class="site-header">
-                <a class="brand" href="/">
-                    <span class="brand-mark" aria-hidden="true"></span>
-                    <span class="brand-name">"PlacaQR"</span>
-                </a>
-            </header>
-            <Slot />
-            <footer class="site-footer">
-                <p>
-                    <strong>"PlacaQR"</strong>
-                    " — 3D-printable QR · no sign-up · we don’t keep your links"
-                </p>
-            </footer>
-            <div id="toast-ad" class="toast-ad" popover="manual" role="status">
-                <span>"AD"</span>
-                <button type="button" class="toast-close" aria-label="Close ad">"×"</button>
-            </div>
-        </div>
-    }
-}
 
 fn placa_not_found() -> View {
     view! {
@@ -61,6 +37,7 @@ const HEAD: &str = r##"
 <meta property="og:title" content="PlacaQR — 3D-printable QR codes" />
 <meta property="og:description" content="Make a dual-color 3MF or STL QR object. No sign-up." />
 <meta property="og:type" content="website" />
+<script type="module" src="/js/placaqr-ui.js"></script>
 "##;
 
 fn seo_kit() -> SeoKit {
@@ -104,17 +81,21 @@ fn seo_kit() -> SeoKit {
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     let kit = seo_kit();
-    let head = format!("{HEAD}{}", kit.head_extras());
+    let head = format!("{HEAD}{}{}", kit.head_extras(), ads::head_snippet());
     let json_ld = serde_json::to_string(&kit.json_ld_blocks).unwrap_or_else(|_| "[]".into());
     let llms: &'static [u8] = Box::leak(kit.llms_txt().into_bytes().into_boxed_slice());
+    let ads_txt = ads::ads_txt().map(|s| -> &'static [u8] {
+        Box::leak(s.into_bytes().into_boxed_slice())
+    });
     let public = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("public");
 
     let mut serve = FlowServeOptions::default();
     // Island JS runs via eval; Chrome then blocks `import()` under 'strict-dynamic'.
     // Same-origin module scripts still need `'self'` to load the Three.js viewer.
     serve.security.csp.strict_dynamic = false;
+    ads::apply_csp(&mut serve.security.csp);
 
-    FlowApp::new()
+    let mut app = FlowApp::new()
         .with_title("PlacaQR — 3D-printable QR | Stand, tile, keychain, plaque")
         .with_description(
             "Make a dual-color 3MF QR: table stand, flush tile with magnet pocket, keychain, or wall plaque. \
@@ -125,8 +106,11 @@ async fn main() -> std::io::Result<()> {
         .with_json_ld(json_ld)
         .with_head(head)
         .with_stylesheet("/css/placaqr.css")
-        .static_asset("/llms.txt", llms, "text/plain; charset=utf-8")
-        .with_public_dir(public)
+        .static_asset("/llms.txt", llms, "text/plain; charset=utf-8");
+    if let Some(body) = ads_txt {
+        app = app.static_asset("/ads.txt", body, "text/plain; charset=utf-8");
+    }
+    app.with_public_dir(public)
         .without_pwa()
         .not_found(placa_not_found)
         .auto_pages(
