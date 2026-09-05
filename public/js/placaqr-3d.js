@@ -69,7 +69,7 @@ export function createViewer(canvas) {
     updateCamera();
   };
 
-  const updateCamera = () => {
+  let updateCamera = () => {
     const cp = Math.cos(pitch);
     camera.position.set(
       target.x + dist * Math.sin(yaw) * cp,
@@ -182,21 +182,41 @@ export function createViewer(canvas) {
   canvas.addEventListener("lostpointercapture", stopDrag);
   canvas.addEventListener("wheel", onWheel, { passive: false });
 
+  const reduceMotion =
+    typeof matchMedia === "function" &&
+    matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const paint = () => renderer.render(scene, camera);
+  // Re-paint after camera changes when the continuous RAF loop is off.
+  if (reduceMotion) {
+    const look = updateCamera;
+    updateCamera = () => {
+      look();
+      paint();
+    };
+  }
+
   let raf = 0;
   const tick = () => {
     raf = requestAnimationFrame(tick);
-    renderer.render(scene, camera);
+    paint();
   };
 
   const ro = new ResizeObserver(resize);
   ro.observe(canvas.parentElement || canvas);
   resize();
   updateCamera();
-  tick();
+  if (!reduceMotion) tick();
+  else paint();
 
   return {
-    setMesh,
-    resize,
+    setMesh(parts) {
+      setMesh(parts);
+      if (reduceMotion) paint();
+    },
+    resize() {
+      resize();
+      if (reduceMotion) paint();
+    },
     rotate(deg) {
       yaw += (Number(deg) * Math.PI) / 180;
       updateCamera();

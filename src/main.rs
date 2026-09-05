@@ -2,6 +2,7 @@
 
 mod actions;
 mod ads;
+mod landing;
 mod design;
 mod export3d;
 mod logo;
@@ -18,30 +19,27 @@ use resuma::SeoKit;
 use serde_json::json;
 
 fn placa_not_found() -> View {
-    view! {
+    crate::landing::chrome(view! {
         <main class="content-section">
             <h1>"Page not found"</h1>
             <p class="hero-lead">"That path does not exist on PlacaQR."</p>
             <p>
-                <a class="btn btn-primary" href="/">"Back to home"</a>
+                <NavLink href="/" class="btn btn-primary">"Back to home"</NavLink>
             </p>
         </main>
-    }
+    })
 }
 
 const HEAD: &str = r##"
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
-<link rel="canonical" href="https://placaqr.fly.dev/" />
-<meta property="og:title" content="PlacaQR — 3D-printable QR codes" />
-<meta property="og:description" content="Make a dual-color 3MF or STL QR object. No sign-up." />
-<meta property="og:type" content="website" />
 <script type="module" src="/js/placaqr-ui.js"></script>
 "##;
 
 fn seo_kit() -> SeoKit {
-    let mut kit = SeoKit::new("PlacaQR", "https://placaqr.fly.dev")
+    let origin = crate::landing::public_origin();
+    let mut kit = SeoKit::new("PlacaQR", &origin)
         .with_locale("en_US")
         .with_keywords(
             "3D printable QR code, QR keychain 3D, QR 3MF, 3D QR plaque, \
@@ -58,12 +56,13 @@ fn seo_kit() -> SeoKit {
             "@context": "https://schema.org",
             "@type": "WebApplication",
             "name": "PlacaQR",
+            "url": crate::landing::public_origin(),
             "applicationCategory": "DesignApplication",
             "operatingSystem": "Web",
             "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
             "description": "Generator for 3D-printable QR codes (3MF and STL)"
         }));
-    kit.theme_color = Some("#f4f3f8".into());
+    kit.theme_color = Some("#12081c".into());
     kit.author = "PlacaQR".into();
     kit.llms_sections = vec![
         (
@@ -74,16 +73,19 @@ fn seo_kit() -> SeoKit {
             "Objects".into(),
             "Table stand, flush tile (optional magnet), keychain, wall plaque, and coin.".into(),
         ),
+        (
+            "Pages".into(),
+            "/3d-printable-qr /google-reviews-qr /wifi-qr-print /qr-keychain-3mf. /privacy /terms.".into(),
+        ),
     ];
     kit
 }
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let kit = seo_kit();
-    let head = format!("{HEAD}{}{}", kit.head_extras(), ads::head_snippet());
-    let json_ld = serde_json::to_string(&kit.json_ld_blocks).unwrap_or_else(|_| "[]".into());
-    let llms: &'static [u8] = Box::leak(kit.llms_txt().into_bytes().into_boxed_slice());
+    // `with_seo_kit` owns keywords/author/theme-color meta, JSON-LD, and the
+    // `/robots.txt` + `/llms.txt` routes (AI crawler policy included).
+    let head = format!("{HEAD}{}", ads::head_snippet());
     let ads_txt = ads::ads_txt().map(|s| -> &'static [u8] {
         Box::leak(s.into_bytes().into_boxed_slice())
     });
@@ -101,12 +103,17 @@ async fn main() -> std::io::Result<()> {
             "Make a dual-color 3MF QR: table stand, flush tile with magnet pocket, keychain, or wall plaque. \
              No sign-up. Built for Google reviews, Wi-Fi, and menus.",
         )
-        .with_site_url("https://placaqr.fly.dev")
+        .with_site_url(crate::landing::public_origin())
         .with_og_image("/og.svg")
-        .with_json_ld(json_ld)
         .with_head(head)
-        .with_stylesheet("/css/placaqr.css")
-        .static_asset("/llms.txt", llms, "text/plain; charset=utf-8");
+        .with_seo_kit(seo_kit())
+        .with_html_theme(
+            HtmlTheme::new(["filament", "paper", "slate", "midnight", "ember", "aurora", "forest"])
+                .dark(["filament", "midnight", "ember", "aurora", "forest"])
+                .cookie("placaqr_theme")
+                .storage_key("placaqr-theme"),
+        )
+        .with_stylesheet("/css/placaqr.css");
     if let Some(body) = ads_txt {
         app = app.static_asset("/ads.txt", body, "text/plain; charset=utf-8");
     }
@@ -116,16 +123,17 @@ async fn main() -> std::io::Result<()> {
             short_name: "PlacaQR".into(),
             description: "Make a dual-color 3MF or STL QR for stands, tiles, keychains, and plaques."
                 .into(),
-            theme_color: "#5b4dff".into(),
-            background_color: "#f4f3f8".into(),
+            theme_color: "#8b5cf6".into(),
+            background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-1".into(),
+            cache_version: "pqr-2".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),
             icon_char: Some("Q".into()),
             precache_paths: vec![
+                "/themes.css".into(),
                 "/css/placaqr.css".into(),
                 "/js/placaqr-ui.js".into(),
             ],

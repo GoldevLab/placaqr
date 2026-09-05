@@ -824,16 +824,16 @@ const run = async (state, __resuma) => {
                 } else {
                     setStatus("Download ready");
                 }
-                const note = document.querySelector("#ad-download-dialog .dialog-note");
+                const note = document.querySelector("#r-modal-ad-download .dialog-note");
                 if (note) {
                     note.textContent = (fmt === "3mf" || fmt === "stl")
                         ? "Your file is downloading. Open the 3MF: filament 1 = Base, filament 2 = QR. Print at 0.16–0.20 mm, no supports."
                         : "Your file is downloading.";
                 }
                 try {
-                    const dlg = document.getElementById("ad-download-dialog");
-                    if (dlg && !dlg.open) dlg.showModal();
-                    globalThis.__placaqrFillAds?.(dlg);
+                    const open = globalThis.__resuma?.showModal?.("ad-download");
+                    if (open && typeof open.then === "function") await open;
+                    globalThis.__placaqrFillAds?.(document.getElementById("r-modal-ad-download"));
                 } catch (_) {}
                 try {
                     const toast = document.getElementById("toast-ad");
@@ -868,7 +868,12 @@ const run = async (state, __resuma) => {
             schedule();
         }
     });
-    applyPreset(root.querySelector("[data-preset].is-active")?.dataset.preset || "google", { fillSamples: false });
+    applyPreset(
+      root.closest("[data-start-preset]")?.dataset.startPreset
+        || root.querySelector("[data-preset].is-active")?.dataset.preset
+        || "google",
+      { fillSamples: false }
+    );
     syncModeUi();
     syncSwatches();
     syncLogoUi();

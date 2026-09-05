@@ -2,25 +2,14 @@
 //! `ADSENSE_CLIENT` + per-placement slot IDs are set.
 
 use resuma::prelude::*;
-use resuma::server::CspConfig;
+use resuma::server::{CspConfig, GOOGLE_ADSENSE_ORIGINS};
 
 const CLIENT_ENV: &str = "ADSENSE_CLIENT";
-
-/// Origins AdSense loads scripts, images, XHR, and frames from.
-const ADSENSE_ORIGINS: &[&str] = &[
-    "https://pagead2.googlesyndication.com",
-    "https://googleads.g.doubleclick.net",
-    "https://tpc.googlesyndication.com",
-    "https://www.google.com",
-    "https://www.gstatic.com",
-    "https://ep1.adtrafficquality.google",
-    "https://ep2.adtrafficquality.google",
-    "https://fundingchoicesmessages.google.com",
-];
 
 #[derive(Clone, Copy)]
 pub enum Placement {
     Banner,
+    #[allow(dead_code)]
     Footer,
     Download,
     Toast,
@@ -118,21 +107,13 @@ pub fn apply_csp(csp: &mut CspConfig) {
     if client_id().is_none() {
         return;
     }
-    for origin in ADSENSE_ORIGINS {
+    // `frame-src` is required for AdSense iframes; without it `default-src 'self'`
+    // blocks the units. Keep CSP enforcing (do not ship `RESUMA_CSP=0`).
+    for origin in GOOGLE_ADSENSE_ORIGINS {
         push_unique(&mut csp.script_src, origin);
         push_unique(&mut csp.img_src, origin);
         push_unique(&mut csp.connect_src, origin);
-    }
-    // AdSense fills cross-origin iframes. Resuma 1.3 has no `frame-src` field,
-    // so an enforcing CSP would block the units (`default-src 'self'`).
-    // Report-Only keeps the header for debugging. Set ADSENSE_ENFORCE_CSP=1
-    // to keep blocking until Resuma supports frame-src.
-    let enforce = matches!(
-        std::env::var("ADSENSE_ENFORCE_CSP").as_deref(),
-        Ok("1") | Ok("true") | Ok("TRUE")
-    );
-    if !enforce {
-        csp.report_only = true;
+        push_unique(&mut csp.frame_src, origin);
     }
 }
 

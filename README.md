@@ -9,6 +9,17 @@
 - Export **dual-color 3MF**, STL, PNG, and SVG
 - 2D preview and interactive 3D preview (mesh from the server, Three.js in the browser)
 
+Default theme is **Filament** (resin violet). Theme picker also offers official Resuma palettes.
+
+| Path | Role |
+|---|---|
+| `/` | Generator |
+| `/3d-printable-qr` | SEO landing |
+| `/google-reviews-qr` | Reviews QR |
+| `/wifi-qr-print` | Wi-Fi QR |
+| `/qr-keychain-3mf` | Keychain |
+| `/privacy` `/terms` | Legal |
+
 ## Development
 
 ```bash
