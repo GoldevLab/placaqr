@@ -35,6 +35,7 @@ const HEAD: &str = r##"
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
 <script type="module" src="/js/placaqr-ui.js"></script>
+<script type="module" src="/js/placaqr-fx.js?v=1"></script>
 "##;
 
 fn seo_kit() -> SeoKit {
@@ -108,8 +109,8 @@ async fn main() -> std::io::Result<()> {
         .with_head(head)
         .with_seo_kit(seo_kit())
         .with_html_theme(
-            HtmlTheme::new(["filament", "paper", "slate", "midnight", "ember", "aurora", "forest"])
-                .dark(["filament", "midnight", "ember", "aurora", "forest"])
+            HtmlTheme::new(["filament"])
+                .dark(["filament"])
                 .cookie("placaqr_theme")
                 .storage_key("placaqr-theme"),
         )
@@ -127,7 +128,7 @@ async fn main() -> std::io::Result<()> {
             background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-3".into(),
+            cache_version: "pqr-4".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),
@@ -136,6 +137,7 @@ async fn main() -> std::io::Result<()> {
                 "/themes.css".into(),
                 "/css/placaqr.css".into(),
                 "/js/placaqr-ui.js".into(),
+                "/js/placaqr-fx.js?v=1".into(),
             ],
             shortcuts: vec![PwaShortcut {
                 name: "New QR".into(),

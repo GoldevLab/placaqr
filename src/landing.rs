@@ -270,73 +270,9 @@ pub fn sister_apps_links() -> View {
     }
 }
 
-pub fn theme_picker() -> View {
+pub fn hero_particles() -> View {
     view! {
-        <div class="theme-wrap">
-            <Popup id="themes" positions="bottom left top right" class="theme-popover">
-                <button
-                    slot="anchor"
-                    type="button"
-                    class="theme-btn"
-                    aria-haspopup="dialog"
-                    aria-label="Change site theme"
-                    title="Themes"
-                >
-                    <span class="theme-btn-wheel" aria-hidden="true"></span>
-                    <span class="theme-btn-label">"Theme"</span>
-                </button>
-                <div class="theme-popover-body" role="dialog" aria-label="Choose a theme">
-                    <p class="theme-popover-kicker">"Live themes"</p>
-                    <p class="theme-popover-lead">
-                        "Filament is PlacaQR’s resin palette. The rest are official Resuma palettes."
-                    </p>
-                    <div class="theme-grid" role="group" aria-label="Site palettes">
-                        <ThemeSwitch id="filament">
-                            <button type="button" class="theme-opt">
-                                <span class="theme-swatch" style="background: conic-gradient(#12081c 0 120deg, #8b5cf6 120deg 240deg, #c4b5fd 240deg 360deg)"></span>
-                                <span>"Filament"</span>
-                            </button>
-                        </ThemeSwitch>
-                        <ThemeSwitch id="paper">
-                            <button type="button" class="theme-opt">
-                                <span class="theme-swatch" style="background: conic-gradient(#eceff4 0 120deg, #2563eb 120deg 240deg, #0f172a 240deg 360deg)"></span>
-                                <span>"Paper"</span>
-                            </button>
-                        </ThemeSwitch>
-                        <ThemeSwitch id="slate">
-                            <button type="button" class="theme-opt">
-                                <span class="theme-swatch" style="background: conic-gradient(#f4efe6 0 120deg, #c2410c 120deg 240deg, #1c1917 240deg 360deg)"></span>
-                                <span>"Slate"</span>
-                            </button>
-                        </ThemeSwitch>
-                        <ThemeSwitch id="midnight">
-                            <button type="button" class="theme-opt">
-                                <span class="theme-swatch" style="background: conic-gradient(#0b1020 0 120deg, #818cf8 120deg 240deg, #e6e8ee 240deg 360deg)"></span>
-                                <span>"Midnight"</span>
-                            </button>
-                        </ThemeSwitch>
-                        <ThemeSwitch id="ember">
-                            <button type="button" class="theme-opt">
-                                <span class="theme-swatch" style="background: conic-gradient(#1a100c 0 120deg, #f59e0b 120deg 240deg, #e8a87c 240deg 360deg)"></span>
-                                <span>"Ember"</span>
-                            </button>
-                        </ThemeSwitch>
-                        <ThemeSwitch id="aurora">
-                            <button type="button" class="theme-opt">
-                                <span class="theme-swatch" style="background: conic-gradient(#0a1628 0 120deg, #22d3ee 120deg 240deg, #a78bfa 240deg 360deg)"></span>
-                                <span>"Aurora"</span>
-                            </button>
-                        </ThemeSwitch>
-                        <ThemeSwitch id="forest">
-                            <button type="button" class="theme-opt">
-                                <span class="theme-swatch" style="background: conic-gradient(#0c1410 0 120deg, #34d399 120deg 240deg, #6ee7b7 240deg 360deg)"></span>
-                                <span>"Forest"</span>
-                            </button>
-                        </ThemeSwitch>
-                    </div>
-                </div>
-            </Popup>
-        </div>
+        <div class="hero-particles" data-hero-particles="" aria-hidden="true"></div>
     }
 }
 
@@ -354,7 +290,6 @@ pub fn chrome(body: View) -> View {
                         <span class="brand-mark" aria-hidden="true"></span>
                         <span class="brand-name">"PlacaQR"</span>
                     </NavLink>
-                    {theme_picker()}
                 </div>
             </header>
             {body}
@@ -416,9 +351,12 @@ pub fn seo_landing(kind: Landing) -> View {
     view! {
         <main class="home-page landing-page" lang="en">
             <section class="hero tool-section tool-section--lead">
-                <p class="eyebrow">{kind.eyebrow()}</p>
-                <h1>{kind.h1()}</h1>
-                <p class="hero-lead">{kind.lead()}</p>
+                <div class="hero-wrap">
+                    {hero_particles()}
+                    <p class="eyebrow">{kind.eyebrow()}</p>
+                    <h1>{kind.h1()}</h1>
+                    <p class="hero-lead">{kind.lead()}</p>
+                </div>
                 <div data-start-preset={preset}>
                     {placaqr_tool()}
                 </div>
