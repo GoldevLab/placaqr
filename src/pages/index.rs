@@ -20,6 +20,7 @@ pub fn page(_req: FlowRequest) -> View {
                 {placaqr_tool()}
                 {ads::unit(Placement::Banner)}
             </section>
+            {crate::landing::sister_apps()}
         </main>
 
         // Opened from the island via `__resuma.showModal("ad-download")` after export.

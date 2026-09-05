@@ -127,7 +127,7 @@ async fn main() -> std::io::Result<()> {
             background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-2".into(),
+            cache_version: "pqr-3".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),

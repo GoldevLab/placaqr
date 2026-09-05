@@ -1348,8 +1348,34 @@ main {
 .seo-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.2rem 0.15rem; margin: 0 0 0.75rem; }
 .seo-links a { color: var(--primary); font-weight: 600; text-decoration: none; }
 .seo-links a:hover, .seo-links a.is-active { text-decoration: underline; color: var(--link-hover); }
-.sister-apps-links { margin: 0 0 0.65rem; }
+.sister-apps-links { margin: 0 0 0.65rem; padding: 0; }
 .sister-apps-links a { color: var(--primary); font-weight: 600; text-decoration: none; }
+.sister-apps-links a:hover { text-decoration: underline; color: var(--link-hover); }
+.sister-apps { margin: 2rem 0 1.25rem; }
+.sister-apps h2 { margin: 0.35rem 0 0; font-size: clamp(1.35rem, 3vw, 1.7rem); }
+.sister-grid {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.sister-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  text-decoration: none;
+  color: var(--text);
+  min-height: 5.5rem;
+}
+.sister-card span { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.sister-card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
 .privacy-page { max-width: 40rem; }
 .privacy-page h2 { margin-top: 1.5rem; }
 .howto-grid { display: grid; gap: 1rem; padding: 0; margin: 1rem 0 0; list-style: none; }
