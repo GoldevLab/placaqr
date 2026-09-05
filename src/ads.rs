@@ -2,9 +2,24 @@
 //! `ADSENSE_CLIENT` + per-placement slot IDs are set.
 
 use resuma::prelude::*;
-use resuma::server::{CspConfig, GOOGLE_ADSENSE_ORIGINS};
+use resuma::server::CspConfig;
 
 const CLIENT_ENV: &str = "ADSENSE_CLIENT";
+
+const ADSENSE_ORIGINS: &[&str] = &[
+    "https://pagead2.googlesyndication.com",
+    "https://googleads.g.doubleclick.net",
+    "https://tpc.googlesyndication.com",
+    "https://www.google.com",
+    "https://www.gstatic.com",
+    "https://www.googleadservices.com",
+    "https://adservice.google.com",
+    "https://www.googletagservices.com",
+    "https://partner.googleadservices.com",
+    "https://ep1.adtrafficquality.google",
+    "https://ep2.adtrafficquality.google",
+    "https://fundingchoicesmessages.google.com",
+];
 
 #[derive(Clone, Copy)]
 pub enum Placement {
@@ -107,13 +122,15 @@ pub fn apply_csp(csp: &mut CspConfig) {
     if client_id().is_none() {
         return;
     }
-    // `frame-src` is required for AdSense iframes; without it `default-src 'self'`
-    // blocks the units. Keep CSP enforcing (do not ship `RESUMA_CSP=0`).
-    for origin in GOOGLE_ADSENSE_ORIGINS {
+    // Git Resuma 1.3.1 has no `frame_src` yet. Report-only plus script/img/connect/style
+    // is the same pattern as UnderKb so AdSense can load on Fly.
+    csp.strict_dynamic = false;
+    csp.report_only = true;
+    for origin in ADSENSE_ORIGINS {
         push_unique(&mut csp.script_src, origin);
         push_unique(&mut csp.img_src, origin);
         push_unique(&mut csp.connect_src, origin);
-        push_unique(&mut csp.frame_src, origin);
+        push_unique(&mut csp.style_src, origin);
     }
 }
 
