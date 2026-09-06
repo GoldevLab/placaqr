@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "PlacaQR",
+  "version": "1.0.0",
+  "description": "Turn this page into a 3D-printable QR (3MF/STL). Opens PlacaQR. Free, no account.",
+  "homepage_url": "https://placaqr.fly.dev/extension",
+  "permissions": ["activeTab", "contextMenus"],
+  "host_permissions": ["https://placaqr.fly.dev/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "3D QR of this page",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

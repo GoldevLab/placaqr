@@ -1,0 +1,15 @@
+Name: PlacaQR
+Short (≤132): Turn this page into a 3D-printable QR. Opens PlacaQR. Free, no account.
+Category: Productivity
+
+Single purpose: Encode the current tab URL as a 3D QR on PlacaQR (3MF/STL download on the site).
+
+Privacy: https://placaqr.fly.dev/privacy
+Support: https://placaqr.fly.dev/extension
+
+Permission justification:
+- activeTab: read the current page URL
+- contextMenus: QR this page / this link
+- placaqr.fly.dev: open /?u= with that URL
+
+Do not put AdSense in the extension. Ads are only on the website.

@@ -1,3 +1,4 @@
+pub mod extension;
 pub mod index;
 pub mod keychain_qr;
 pub mod printable_qr;

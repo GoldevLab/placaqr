@@ -874,6 +874,15 @@ const run = async (state, __resuma) => {
         || "google",
       { fillSamples: false }
     );
+    try {
+      const incoming = new URLSearchParams(location.search).get("u")
+        || new URLSearchParams(location.search).get("url");
+      if (incoming && /^https?:\/\//i.test(incoming) && incoming.length < 2048) {
+        applyPreset("url", { fillSamples: false });
+        const raw = g('[data-bind="raw"]');
+        if (raw) raw.value = incoming;
+      }
+    } catch (_) {}
     syncModeUi();
     syncSwatches();
     syncLogoUi();

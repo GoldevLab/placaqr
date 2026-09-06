@@ -24,7 +24,6 @@ const ADSENSE_ORIGINS: &[&str] = &[
 #[derive(Clone, Copy)]
 pub enum Placement {
     Banner,
-    #[allow(dead_code)]
     Footer,
     Download,
     Toast,
@@ -96,16 +95,24 @@ fn slot_id(kind: Placement) -> Option<String> {
         .ok()
         .as_deref()
         .and_then(sanitize_slot)
+        .or_else(|| {
+            std::env::var("ADSENSE_SLOT")
+                .ok()
+                .as_deref()
+                .and_then(sanitize_slot)
+        })
 }
 
 /// `<script>` tag for the document head (empty when no publisher ID).
 pub fn head_snippet() -> String {
     match client_id() {
         Some(id) => format!(
-            r#"<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={id}" crossorigin="anonymous"></script>
-<script type="module" src="/js/placaqr-ads.js"></script>"#
+            r#"<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin="anonymous" />
+<link rel="preconnect" href="https://googleads.g.doubleclick.net" crossorigin="anonymous" />
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={id}" crossorigin="anonymous"></script>
+<script type="module" src="/js/placaqr-ads.js?v=2"></script>"#
         ),
-        None => r#"<script type="module" src="/js/placaqr-ads.js"></script>"#.into(),
+        None => r#"<script type="module" src="/js/placaqr-ads.js?v=2"></script>"#.into(),
     }
 }
 
@@ -119,11 +126,6 @@ pub fn ads_txt() -> Option<String> {
 }
 
 pub fn apply_csp(csp: &mut CspConfig) {
-    if client_id().is_none() {
-        return;
-    }
-    // Git Resuma 1.3.1 has no `frame_src` yet. Report-only plus script/img/connect/style
-    // is the same pattern as UnderKb so AdSense can load on Fly.
     csp.strict_dynamic = false;
     csp.report_only = true;
     for origin in ADSENSE_ORIGINS {

@@ -13,12 +13,10 @@ pub fn page(_req: FlowRequest) -> View {
     view! {
         <main>
             <section class="tool-section tool-section--lead" id="tool" aria-labelledby="tool-title">
-                <div class="hero-wrap">
-                    {crate::landing::hero_particles()}
-                    <div class="section-head section-head--compact">
-                        <h1 id="tool-title">"Create your 3D QR"</h1>
-                        <p>"Paste a link, pick a shape, download a file ready to print. No account needed."</p>
-                    </div>
+                {crate::landing::hero_particles()}
+                <div class="section-head section-head--compact">
+                    <h1 id="tool-title">"Create your 3D QR"</h1>
+                    <p>"Paste a link, pick a shape, download a file ready to print. No account needed."</p>
                 </div>
                 {placaqr_tool()}
                 {ads::unit(Placement::Banner)}

@@ -160,6 +160,13 @@ pub fn canonical_url(path: &str) -> String {
     format!("{}{path}", public_origin())
 }
 
+pub fn chrome_store_url() -> Option<String> {
+    std::env::var("CHROME_STORE_URL")
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| s.starts_with("https://"))
+}
+
 pub fn seo_footer_links() -> View {
     view! {
         <nav class="seo-links" aria-label="PlacaQR pages">
@@ -174,6 +181,8 @@ pub fn seo_footer_links() -> View {
             <NavLink href="/privacy">"Privacy"</NavLink>
             <span aria-hidden="true">" · "</span>
             <NavLink href="/terms">"Terms"</NavLink>
+            <span aria-hidden="true">" · "</span>
+            <NavLink href="/extension">"Extension"</NavLink>
         </nav>
     }
 }
@@ -199,6 +208,16 @@ const FAMILY: &[(&str, &str, &str)] = &[
         "PlacaQR",
         "3D-printable QR — stand, tile, keychain, or plaque.",
         "https://placaqr.fly.dev",
+    ),
+    (
+        "Linkprobe",
+        "Paste a URL. See which links work and which 404.",
+        "https://linkprobe.fly.dev",
+    ),
+    (
+        "Svgsport",
+        "Paste a page. Download every SVG as a zip.",
+        "https://svgsport.fly.dev",
     ),
     (
         "Billloom",
@@ -277,6 +296,29 @@ pub fn hero_particles() -> View {
 }
 
 pub fn chrome(body: View) -> View {
+    chrome_with_ads(body, true)
+}
+
+pub fn chrome_with_ads(body: View, ads: bool) -> View {
+    let footer_ad = if ads {
+        view! {
+            <div class="ad-rail ad-rail-end">
+                {crate::ads::unit(crate::ads::Placement::Footer)}
+            </div>
+        }
+    } else {
+        view! { <div hidden=""></div> }
+    };
+    let toast_ad = if ads {
+        view! {
+            <div id="toast-ad" class="toast-ad" popover="manual" role="status">
+                {crate::ads::unit(crate::ads::Placement::Toast)}
+                <button type="button" class="toast-close" aria-label="Close ad">"×"</button>
+            </div>
+        }
+    } else {
+        view! { <div hidden=""></div> }
+    };
     view! {
         <div class="app">
             <div class="liquid-orbs" aria-hidden="true">
@@ -293,6 +335,7 @@ pub fn chrome(body: View) -> View {
                 </div>
             </header>
             {body}
+            {footer_ad}
             <footer class="site-footer">
                 {seo_footer_links()}
                 {sister_apps_links()}
@@ -301,10 +344,7 @@ pub fn chrome(body: View) -> View {
                     " — 3D-printable QR · no sign-up · we don’t keep your links"
                 </p>
             </footer>
-            <div id="toast-ad" class="toast-ad" popover="manual" role="status">
-                {crate::ads::unit(crate::ads::Placement::Toast)}
-                <button type="button" class="toast-close" aria-label="Close ad">"×"</button>
-            </div>
+            {toast_ad}
         </div>
     }
 }
@@ -351,12 +391,10 @@ pub fn seo_landing(kind: Landing) -> View {
     view! {
         <main class="home-page landing-page" lang="en">
             <section class="hero tool-section tool-section--lead">
-                <div class="hero-wrap">
-                    {hero_particles()}
-                    <p class="eyebrow">{kind.eyebrow()}</p>
-                    <h1>{kind.h1()}</h1>
-                    <p class="hero-lead">{kind.lead()}</p>
-                </div>
+                {hero_particles()}
+                <p class="eyebrow">{kind.eyebrow()}</p>
+                <h1>{kind.h1()}</h1>
+                <p class="hero-lead">{kind.lead()}</p>
                 <div data-start-preset={preset}>
                     {placaqr_tool()}
                 </div>

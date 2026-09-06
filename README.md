@@ -51,7 +51,9 @@ fly secrets set ADSENSE_CLIENT=ca-pub-xxxxxxxxxxxxxxxx \
   ADSENSE_SLOT_DOWNLOAD=… ADSENSE_SLOT_TOAST=…
 ```
 
-With `ADSENSE_CLIENT` set, the app also serves `/ads.txt` and loads `adsbygoogle.js`. Create the matching display units in AdSense (responsive banner, 300×250, 320×100).
+With `ADSENSE_CLIENT` set, the app also serves `/ads.txt` and loads `adsbygoogle.js`. One `ADSENSE_SLOT` fills every unit if you do not set per-placement IDs.
+
+Chrome extension: `extension/` (zip that folder for the Web Store). After a custom domain, Fly `SITE_URL` and edit `extension/config.js` + `manifest.json`. `CHROME_STORE_URL` fills the button on `/extension`.
 
 ## Deploy (Fly.io)
 

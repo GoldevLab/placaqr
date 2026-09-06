@@ -11,6 +11,7 @@ mod pages;
 mod payload;
 mod preview;
 mod qr_gen;
+mod site;
 mod tool;
 
 use pages::PagesRegistry;
@@ -19,7 +20,7 @@ use resuma::SeoKit;
 use serde_json::json;
 
 fn placa_not_found() -> View {
-    crate::landing::chrome(view! {
+    crate::landing::chrome_with_ads(view! {
         <main class="content-section">
             <h1>"Page not found"</h1>
             <p class="hero-lead">"That path does not exist on PlacaQR."</p>
@@ -27,15 +28,19 @@ fn placa_not_found() -> View {
                 <NavLink href="/" class="btn btn-primary">"Back to home"</NavLink>
             </p>
         </main>
-    })
+    }, false)
 }
 
 const HEAD: &str = r##"
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
-<script type="module" src="/js/placaqr-ui.js"></script>
-<script type="module" src="/js/placaqr-fx.js?v=1"></script>
+<script type="module" src="/js/placaqr-ui.js?v=2"></script>
+<script type="module" src="/js/placaqr-fx.js?v=2"></script>
 "##;
 
 fn seo_kit() -> SeoKit {
@@ -86,10 +91,11 @@ fn seo_kit() -> SeoKit {
 async fn main() -> std::io::Result<()> {
     // `with_seo_kit` owns keywords/author/theme-color meta, JSON-LD, and the
     // `/robots.txt` + `/llms.txt` routes (AI crawler policy included).
-    let head = format!("{HEAD}{}", ads::head_snippet());
+    let head = format!("{HEAD}{}{}", ads::head_snippet(), crate::site::head_extras());
     let ads_txt = ads::ads_txt().map(|s| -> &'static [u8] {
         Box::leak(s.into_bytes().into_boxed_slice())
     });
+    const ICON: &[u8] = include_bytes!("icon.svg");
     let public = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("public");
 
     let mut serve = FlowServeOptions::default();
@@ -105,7 +111,7 @@ async fn main() -> std::io::Result<()> {
              No sign-up. Built for Google reviews, Wi-Fi, and menus.",
         )
         .with_site_url(crate::landing::public_origin())
-        .with_og_image("/og.svg")
+        .with_og_image("/og.png")
         .with_head(head)
         .with_seo_kit(seo_kit())
         .with_html_theme(
@@ -114,7 +120,8 @@ async fn main() -> std::io::Result<()> {
                 .cookie("placaqr_theme")
                 .storage_key("placaqr-theme"),
         )
-        .with_stylesheet("/css/placaqr.css");
+        .with_stylesheet("/css/placaqr.css?v=r1")
+        .static_asset("/icon.svg", ICON, "image/svg+xml");
     if let Some(body) = ads_txt {
         app = app.static_asset("/ads.txt", body, "text/plain; charset=utf-8");
     }
@@ -128,16 +135,21 @@ async fn main() -> std::io::Result<()> {
             background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-4".into(),
+            cache_version: "pqr-8".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),
             icon_char: Some("Q".into()),
             precache_paths: vec![
                 "/themes.css".into(),
-                "/css/placaqr.css".into(),
-                "/js/placaqr-ui.js".into(),
-                "/js/placaqr-fx.js?v=1".into(),
+                "/css/placaqr.css?v=r1".into(),
+                "/js/placaqr-ui.js?v=2".into(),
+                "/js/placaqr-fx.js?v=2".into(),
+                "/js/placaqr-ads.js?v=2".into(),
+                "/icon.svg".into(),
+                "/icons/icon-192.png".into(),
+                "/icons/icon-512.png".into(),
+                "/icons/apple-touch-icon.png".into(),
             ],
             shortcuts: vec![PwaShortcut {
                 name: "New QR".into(),

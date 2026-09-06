@@ -13,6 +13,7 @@ impl FlowPageRegistry for PagesRegistry {
             ("/qr-keychain-3mf", "keychain_qr"),
             ("/privacy", "privacy"),
             ("/terms", "terms"),
+            ("/extension", "extension"),
         ]
     }
 
@@ -29,6 +30,7 @@ impl FlowPageRegistry for PagesRegistry {
             "keychain_qr" => Some(super::keychain_qr::page(req)),
             "privacy" => Some(super::privacy::page(req)),
             "terms" => Some(super::terms::page(req)),
+            "extension" => Some(super::extension::page(req)),
             _ => None,
         }
     }

@@ -46,19 +46,18 @@
       accent = (cs.getPropertyValue("--accent") || "#8b5cf6").trim() || "#8b5cf6";
       ink = (cs.getPropertyValue("--primary") || "#c4b5fd").trim() || "#c4b5fd";
     };
+    const host = root.parentElement || root;
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = root.clientWidth;
-      h = root.clientHeight;
+      w = host.clientWidth;
+      h = host.clientHeight;
       if (!w || !h) return;
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     const onMove = (e) => {
-      const r = root.getBoundingClientRect();
+      const r = host.getBoundingClientRect();
       if (!r.width || !r.height) return;
       pointerX = (e.clientX - r.left) / r.width - 0.5;
       pointerY = (e.clientY - r.top) / r.height - 0.5;
@@ -148,6 +147,8 @@
     });
     readColors();
     resize();
+    const sizeWatch = typeof ResizeObserver === "function" ? new ResizeObserver(resize) : null;
+    sizeWatch?.observe(host);
     window.addEventListener("resize", resize, { passive: true });
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("visibilitychange", onVis);
@@ -157,6 +158,7 @@
       raf = 0;
       last = 0;
       themeWatch.disconnect();
+      sizeWatch?.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("visibilitychange", onVis);

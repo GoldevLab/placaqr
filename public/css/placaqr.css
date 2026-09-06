@@ -27,6 +27,8 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -94,6 +96,7 @@ body {
   max-width: var(--max);
   margin: 0 auto;
   padding: 1.1rem var(--page-pad-end) 1rem var(--page-pad);
+  padding-top: max(1.1rem, env(safe-area-inset-top, 0px));
   width: 100%;
 }
 
@@ -125,7 +128,7 @@ main {
   width: 100%;
   max-width: var(--max);
   margin: 0 auto;
-  padding: 0 1.25rem 3rem;
+  padding: 0 var(--page-pad-end) 3rem var(--page-pad);
 }
 
 .tool-section,
@@ -134,43 +137,27 @@ main {
 }
 
 .tool-section--lead {
+  position: relative;
+  isolation: isolate;
   padding-top: 0.35rem;
 }
 
-.hero-wrap {
-  position: relative;
-  overflow: hidden;
-  margin-inline: -1.25rem;
-  padding: 0.35rem 1.25rem 0.85rem;
-}
-.hero-wrap::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 50% 40% at 90% 10%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
-    radial-gradient(ellipse 40% 35% at 8% 90%, color-mix(in srgb, var(--canvas-hi) 55%, transparent), transparent 72%);
-}
 .hero-particles {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  overflow: hidden;
-  opacity: 0.7;
+  overflow: clip;
+  opacity: 0.45;
 }
 .hero-particles-canvas {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
 }
-.hero-wrap .section-head,
-.hero-wrap .hero-copy,
-.hero-wrap > .eyebrow,
-.hero-wrap > h1,
-.hero-wrap > .hero-lead {
+.tool-section--lead > :not(.hero-particles) {
   position: relative;
   z-index: 1;
 }
@@ -409,6 +396,8 @@ main {
   color: var(--fg);
   padding: 0.78rem 0.9rem;
   font: inherit;
+  font-size: 1rem;
+  min-height: 3rem;
   font-weight: 500;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
@@ -1519,7 +1508,8 @@ dialog::backdrop {
   .object-cards,
   .field-row,
   .size-row,
-  .color-picks {
+  .color-picks,
+  .download-more {
     grid-template-columns: 1fr;
   }
 
