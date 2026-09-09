@@ -36,9 +36,6 @@ const HEAD: &str = r##"
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
 <script type="module" src="/js/placaqr-ui.js?v=2"></script>
 <script type="module" src="/js/placaqr-fx.js?v=2"></script>
 "##;
@@ -120,8 +117,23 @@ async fn main() -> std::io::Result<()> {
                 .cookie("placaqr_theme")
                 .storage_key("placaqr-theme"),
         )
-        .with_stylesheet("/css/placaqr.css?v=r1")
+        .with_stylesheet("/css/placaqr.css?v=r2")
         .static_asset("/icon.svg", ICON, "image/svg+xml");
+    {
+        let contact = crate::site::contact_email()
+            .map(|e| format!("Contact: mailto:{e}\n"))
+            .unwrap_or_default();
+        let body = format!(
+            "{contact}Canonical: https://placaqr.fly.dev/.well-known/security.txt\nPreferred-Languages: en\nExpires: 2027-12-31T23:59:59Z\n"
+        );
+        let leaked: &'static [u8] = Box::leak(body.into_bytes().into_boxed_slice());
+        app = app.static_asset(
+            "/.well-known/security.txt",
+            leaked,
+            "text/plain; charset=utf-8",
+        );
+    }
+
     if let Some(body) = ads_txt {
         app = app.static_asset("/ads.txt", body, "text/plain; charset=utf-8");
     }
@@ -142,7 +154,7 @@ async fn main() -> std::io::Result<()> {
             icon_char: Some("Q".into()),
             precache_paths: vec![
                 "/themes.css".into(),
-                "/css/placaqr.css?v=r1".into(),
+                "/css/placaqr.css?v=r2".into(),
                 "/js/placaqr-ui.js?v=2".into(),
                 "/js/placaqr-fx.js?v=2".into(),
                 "/js/placaqr-ads.js?v=2".into(),

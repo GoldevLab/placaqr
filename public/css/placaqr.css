@@ -10,8 +10,8 @@
   --danger: #fb7185;
   --shadow: var(--glass-shadow);
   --radius: 22px;
-  --font: "Figtree", system-ui, sans-serif;
-  --display: "Outfit", "Figtree", sans-serif;
+  --font: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --display: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --max: 1120px;
   --page-pad: max(1.25rem, env(safe-area-inset-left, 0px));
   --page-pad-end: max(1.25rem, env(safe-area-inset-right, 0px));
