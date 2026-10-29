@@ -112,6 +112,7 @@ pub fn head_snippet() -> String {
         Some(id) => format!(
             r#"<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
 <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
+<meta name="google-adsense-account" content="{id}" />
 <meta name="pqr-adsense-client" content="{id}" />
 <script>
 (function(){{
@@ -151,14 +152,17 @@ pub fn ads_txt() -> Option<String> {
 }
 
 pub fn apply_csp(csp: &mut CspConfig) {
-    csp.strict_dynamic = false;
-    csp.report_only = true;
+    let mut policy = csp.clone().allow_google_adsense();
+    policy.strict_dynamic = false;
+    policy.report_only = true;
     for origin in ADSENSE_ORIGINS {
-        push_unique(&mut csp.script_src, origin);
-        push_unique(&mut csp.img_src, origin);
-        push_unique(&mut csp.connect_src, origin);
-        push_unique(&mut csp.style_src, origin);
+        push_unique(&mut policy.script_src, origin);
+        push_unique(&mut policy.img_src, origin);
+        push_unique(&mut policy.connect_src, origin);
+        push_unique(&mut policy.style_src, origin);
+        push_unique(&mut policy.frame_src, origin);
     }
+    *csp = policy;
 }
 
 fn push_unique(list: &mut Vec<String>, origin: &str) {
