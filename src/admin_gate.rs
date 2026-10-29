@@ -25,7 +25,8 @@ struct Hits {
     count: usize,
 }
 
-static LOGIN_HITS: Mutex<HashMap<String, Hits>> = Mutex::new(HashMap::new());
+static LOGIN_HITS: std::sync::LazyLock<Mutex<HashMap<String, Hits>>> =
+    std::sync::LazyLock::new(|| Mutex::new(HashMap::new()));
 static SECRET: std::sync::LazyLock<[u8; 32]> = std::sync::LazyLock::new(load_or_create_secret);
 
 pub fn allow_login(ip: &str) -> bool {

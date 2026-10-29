@@ -9,7 +9,8 @@ use serde::{Deserialize, Serialize};
 
 static STATE: std::sync::LazyLock<Mutex<Activity>> =
     std::sync::LazyLock::new(|| Mutex::new(Activity::load_file()));
-static NOTES: Mutex<HashMap<String, (u64, usize)>> = Mutex::new(HashMap::new());
+static NOTES: std::sync::LazyLock<Mutex<HashMap<String, (u64, usize)>>> =
+    std::sync::LazyLock::new(|| Mutex::new(HashMap::new()));
 
 #[derive(Clone, Copy)]
 pub enum Kind {
