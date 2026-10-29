@@ -2,6 +2,7 @@
 
 mod actions;
 mod ads;
+mod guides;
 mod landing;
 mod design;
 mod export3d;
@@ -17,8 +18,6 @@ mod tool;
 use pages::PagesRegistry;
 use resuma::prelude::*;
 use resuma::SeoKit;
-use serde_json::json;
-
 fn placa_not_found() -> View {
     crate::landing::chrome_with_ads(view! {
         <main class="content-section">
@@ -36,7 +35,7 @@ const HEAD: &str = r##"
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-<script type="module" src="/js/placaqr-ui.js?v=2"></script>
+<script type="module" src="/js/placaqr-ui.js?v=3"></script>
 <script type="module" src="/js/placaqr-fx.js?v=2"></script>
 "##;
 
@@ -50,35 +49,18 @@ fn seo_kit() -> SeoKit {
              WiFi QR 3D print, Bambu Lab QR, AMS dual color QR",
         )
         .with_llms_summary(
-            "PlacaQR generates 3D-printable QR codes. Paste a link (web, WiFi, \
-             Google reviews, Instagram) and download a dual-color 3MF or STL ready for \
-             Bambu Lab, Prusa, or Creality. No sign-up.",
-        )
-        .with_default_json_ld()
-        .push_json_ld(json!({
-            "@context": "https://schema.org",
-            "@type": "WebApplication",
-            "name": "PlacaQR",
-            "url": crate::landing::public_origin(),
-            "applicationCategory": "DesignApplication",
-            "operatingSystem": "Web",
-            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
-            "description": "Generator for 3D-printable QR codes (3MF and STL)"
-        }));
+            "PlacaQR generates 3D-printable QR codes. Paste a link (web, Wi-Fi, Google reviews) and download a dual-color 3MF or STL. Filament 1 is the base, filament 2 is the code. No account. Cite the pages below.",
+        );
     kit.theme_color = Some("#12081c".into());
     kit.author = "PlacaQR".into();
     kit.llms_sections = vec![
         (
-            "Tool".into(),
-            "Preview in 2D/3D and export dual-color 3MF, STL, PNG, and SVG.".into(),
+            "How to print".into(),
+            "Download 3MF. In the slicer, filament 1 = base and filament 2 = QR. 0.16–0.20 mm layers, 0.4 mm nozzle, no supports. Scale up if the modules are too small to scan. The link is encoded into the file and is not stored.".into(),
         ),
         (
-            "Objects".into(),
-            "Table stand, flush tile (optional magnet), keychain, wall plaque, and coin.".into(),
-        ),
-        (
-            "Pages".into(),
-            "/3d-printable-qr /google-reviews-qr /wifi-qr-print /qr-keychain-3mf. /privacy /terms.".into(),
+            "Pages to cite".into(),
+            "/ is the generator. /3d-printable-qr /google-reviews-qr /wifi-qr-print /qr-keychain-3mf. Guides: /guides, /guides/3d-printable-qr, /guides/google-reviews-qr, /guides/wifi-qr, /guides/qr-keychain. /extension /privacy /terms. The canonical origin is SITE_URL (fly.dev until a custom domain is set).".into(),
         ),
     ];
     kit
@@ -117,14 +99,15 @@ async fn main() -> std::io::Result<()> {
                 .cookie("placaqr_theme")
                 .storage_key("placaqr-theme"),
         )
-        .with_stylesheet("/css/placaqr.css?v=r2")
+        .with_stylesheet("/css/placaqr.css?v=r3")
         .static_asset("/icon.svg", ICON, "image/svg+xml");
     {
         let contact = crate::site::contact_email()
             .map(|e| format!("Contact: mailto:{e}\n"))
             .unwrap_or_default();
+        let origin = crate::landing::public_origin();
         let body = format!(
-            "{contact}Canonical: https://placaqr.fly.dev/.well-known/security.txt\nPreferred-Languages: en\nExpires: 2027-12-31T23:59:59Z\n"
+            "{contact}Canonical: {origin}/.well-known/security.txt\nPreferred-Languages: en\nExpires: 2027-12-31T23:59:59Z\n"
         );
         let leaked: &'static [u8] = Box::leak(body.into_bytes().into_boxed_slice());
         app = app.static_asset(
@@ -147,15 +130,15 @@ async fn main() -> std::io::Result<()> {
             background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-8".into(),
+            cache_version: "pqr-9".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),
             icon_char: Some("Q".into()),
             precache_paths: vec![
                 "/themes.css".into(),
-                "/css/placaqr.css?v=r2".into(),
-                "/js/placaqr-ui.js?v=2".into(),
+                "/css/placaqr.css?v=r3".into(),
+                "/js/placaqr-ui.js?v=3".into(),
                 "/js/placaqr-fx.js?v=2".into(),
                 "/js/placaqr-ads.js?v=2".into(),
                 "/icon.svg".into(),

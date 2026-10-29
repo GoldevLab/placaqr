@@ -819,6 +819,9 @@ const run = async (state, __resuma) => {
                     const r = await __resuma.action("export_design", [buildSpec(), fmt]);
                     saveBlob(new Blob([bytesFromB64(r.base64)], { type: r.mime }), r.filename);
                 }
+                if (typeof window.appEvent === "function") {
+                    window.appEvent("job_complete", { tool: fmt || "qr" });
+                }
                 if (fmt === "3mf") {
                     setStatus("3MF ready. In the slicer: filament 1 = Base, filament 2 = QR. 0.16–0.20 mm layer, 0.4 mm nozzle, no supports.");
                 } else {
@@ -941,3 +944,11 @@ function whenReady() {
 whenReady().then(() => initPlacaqr({}, globalThis.__resuma)).catch((err) => {
   console.error("[placaqr] ui", err);
 });
+
+document.addEventListener("resuma:navigate", () => {
+  document.documentElement.classList.remove("is-navigating");
+});
+document.addEventListener("click", (e) => {
+  const el = e.target instanceof Element ? e.target.closest("a[data-r-nav]") : null;
+  if (el && el.getAttribute("href")) document.documentElement.classList.add("is-navigating");
+}, true);

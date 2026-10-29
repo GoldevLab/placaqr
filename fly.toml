@@ -10,6 +10,8 @@ primary_region = "iad"
   RESUMA_TRUSTED_PROXY_CIDRS = "fdaa::/16"
   RESUMA_ADDR = "0.0.0.0:8080"
   RESUMA_DATA_DIR = "/data"
+  # Canonical origin. When you buy a domain, change this to https://that-domain
+  # and attach the certificate. The app reads SITE_URL for canonicals, sitemap, and llms.txt.
   SITE_URL = "https://placaqr.fly.dev"
   CARGO_MANIFEST_DIR = "/app"
 

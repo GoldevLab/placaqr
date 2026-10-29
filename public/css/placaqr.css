@@ -1543,3 +1543,51 @@ dialog::backdrop {
     transition: none !important;
   }
 }
+
+.site-header { container-type: scroll-state; container-name: site-header; }
+.site-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem 1.1rem;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--page-pad-end) 0.7rem var(--page-pad);
+  overflow-x: auto;
+  scrollbar-width: none;
+  font-size: 0.84rem;
+}
+.site-nav::-webkit-scrollbar { display: none; }
+.site-nav-link {
+  flex: 0 0 auto;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  padding-bottom: 0.15rem;
+  border-bottom: 2px solid transparent;
+}
+.site-nav-link:hover, .site-nav-link.is-active { color: var(--text); border-bottom-color: var(--accent); }
+.nav-progress {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  transform: scaleX(0.2); transform-origin: center; opacity: 0; pointer-events: none;
+}
+html.is-navigating .nav-progress { opacity: 1; animation: pqr-progress 0.9s ease-in-out infinite; }
+@keyframes pqr-progress {
+  0% { transform: scaleX(0.18); opacity: 0.35; }
+  50% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(0.18); opacity: 0.35; }
+}
+.guide-section h2 { margin: 1.1rem 0 0.35rem; font-size: 1.15rem; }
+.guide-section p { margin: 0; color: var(--muted); }
+.guide-links { margin: 0.4rem 0 1rem; padding-left: 1.1rem; }
+.guide-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.related-grid {
+  list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.related-card {
+  display: flex; flex-direction: column; gap: 0.35rem; padding: 1rem 1.05rem;
+  text-decoration: none; color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius);
+}
+.related-card span { color: var(--muted); font-size: 0.92rem; }

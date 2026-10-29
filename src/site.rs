@@ -32,6 +32,12 @@ pub fn head_extras() -> String {
 <script>
 (function(){{
   var id={id:?};
+  window.__appQueue=window.__appQueue||[];
+  window.appEvent=function(name, params){{
+    params=params||{{}};
+    if(window.gtag){{window.gtag('event', name, params);return;}}
+    window.__appQueue.push([name, params]);
+  }};
   function load(){{
     if(window.__goldevGaLoaded)return;
     window.__goldevGaLoaded=1;
@@ -45,6 +51,8 @@ pub fn head_extras() -> String {
       window.gtag=gtag;
       gtag('js',new Date());
       gtag('config',id,{{send_page_view:true}});
+      (window.__appQueue||[]).forEach(function(item){{gtag('event', item[0], item[1]);}});
+      window.__appQueue=[];
     }};
     document.head.appendChild(s);
   }}

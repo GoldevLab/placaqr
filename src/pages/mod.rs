@@ -1,4 +1,9 @@
 pub mod extension;
+pub mod guide_keychain;
+pub mod guide_print;
+pub mod guide_reviews;
+pub mod guide_wifi;
+pub mod guides;
 pub mod index;
 pub mod keychain_qr;
 pub mod printable_qr;

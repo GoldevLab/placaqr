@@ -178,6 +178,8 @@ pub fn seo_footer_links() -> View {
             <span aria-hidden="true">" · "</span>
             <NavLink href="/qr-keychain-3mf">"Keychain"</NavLink>
             <span aria-hidden="true">" · "</span>
+            <NavLink href="/guides">"Guides"</NavLink>
+            <span aria-hidden="true">" · "</span>
             <NavLink href="/privacy">"Privacy"</NavLink>
             <span aria-hidden="true">" · "</span>
             <NavLink href="/terms">"Terms"</NavLink>
@@ -192,12 +194,12 @@ const FAMILY: &[(&str, &str, &str)] = &[
     (
         "YouTubeForge",
         "YouTube transcript, MP3, SRT, and translation.",
-        "https://youtubetotext.fly.dev",
+        "https://forgeyt.com",
     ),
     (
         "UnderKb",
         "Compress images to a real KB target. JPG, WebP, PNG.",
-        "https://underkb.fly.dev",
+        "https://under200kb.com",
     ),
     (
         "PDFForge",
@@ -280,8 +282,17 @@ pub fn hero_particles() -> View {
     }
 }
 
+fn page_shows_ads() -> bool {
+    let path = current_request()
+        .map(|r| r.path)
+        .unwrap_or_else(|| "/".into());
+    let trimmed = path.trim_end_matches('/');
+    let path = if trimmed.is_empty() { "/" } else { trimmed };
+    !matches!(path, "/privacy" | "/terms")
+}
+
 pub fn chrome(body: View) -> View {
-    chrome_with_ads(body, true)
+    chrome_with_ads(body, page_shows_ads())
 }
 
 pub fn chrome_with_ads(body: View, ads: bool) -> View {
@@ -318,6 +329,14 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
                         <span class="brand-name">"PlacaQR"</span>
                     </NavLink>
                 </div>
+                <nav class="site-nav" aria-label="Objects">
+                    <NavLink href="/3d-printable-qr" class="site-nav-link" activeClass="is-active">"3D QR"</NavLink>
+                    <NavLink href="/google-reviews-qr" class="site-nav-link" activeClass="is-active">"Reviews"</NavLink>
+                    <NavLink href="/wifi-qr-print" class="site-nav-link" activeClass="is-active">"Wi-Fi"</NavLink>
+                    <NavLink href="/qr-keychain-3mf" class="site-nav-link" activeClass="is-active">"Keychain"</NavLink>
+                    <NavLink href="/guides" class="site-nav-link" activeClass="is-active">"Guides"</NavLink>
+                </nav>
+                <span class="nav-progress" aria-hidden="true"></span>
             </header>
             {body}
             {footer_ad}
@@ -347,7 +366,20 @@ pub fn seo_landing(kind: Landing) -> View {
             "acceptedAnswer": { "@type": "Answer", "text": a }
         })).collect::<Vec<_>>()
     });
-    set_page_json_ld(faq_ld.to_string());
+    let page_ld = json!({
+        "@type": "WebPage",
+        "name": kind.title(),
+        "description": kind.description(),
+        "url": canonical_url(kind.path()),
+        "inLanguage": "en"
+    });
+    set_page_json_ld(
+        json!({
+            "@context": "https://schema.org",
+            "@graph": [page_ld, faq_ld]
+        })
+        .to_string(),
+    );
     let howto: Vec<View> = kind
         .howto()
         .iter()

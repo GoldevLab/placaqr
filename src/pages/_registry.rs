@@ -14,6 +14,11 @@ impl FlowPageRegistry for PagesRegistry {
             ("/privacy", "privacy"),
             ("/terms", "terms"),
             ("/extension", "extension"),
+            ("/guides", "guides"),
+            ("/guides/3d-printable-qr", "guide_print"),
+            ("/guides/google-reviews-qr", "guide_reviews"),
+            ("/guides/wifi-qr", "guide_wifi"),
+            ("/guides/qr-keychain", "guide_keychain"),
         ]
     }
 
@@ -31,6 +36,11 @@ impl FlowPageRegistry for PagesRegistry {
             "privacy" => Some(super::privacy::page(req)),
             "terms" => Some(super::terms::page(req)),
             "extension" => Some(super::extension::page(req)),
+            "guides" => Some(super::guides::page(req)),
+            "guide_print" => Some(super::guide_print::page(req)),
+            "guide_reviews" => Some(super::guide_reviews::page(req)),
+            "guide_wifi" => Some(super::guide_wifi::page(req)),
+            "guide_keychain" => Some(super::guide_keychain::page(req)),
             _ => None,
         }
     }

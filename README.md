@@ -18,6 +18,9 @@ Default theme is **Filament** (resin violet). Theme picker also offers official 
 | `/google-reviews-qr` | Reviews QR |
 | `/wifi-qr-print` | Wi-Fi QR |
 | `/qr-keychain-3mf` | Keychain |
+| `/guides` | Print, reviews, Wi-Fi, keychain |
+
+The live origin is `SITE_URL` in `fly.toml` (`https://placaqr.fly.dev` until you buy a domain). Change that one value and attach the certificate. Canonicals, the sitemap, `/llms.txt`, and `security.txt` follow it. Do not invent a domain in the pages.
 | `/privacy` `/terms` | Legal |
 
 ## Development
