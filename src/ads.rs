@@ -1,6 +1,8 @@
 //! Google AdSense slots. Layout is always reserved; live units render when
 //! `ADSENSE_CLIENT` + per-placement slot IDs are set.
 
+use std::cell::Cell;
+
 use resuma::prelude::*;
 use resuma::server::CspConfig;
 
@@ -167,8 +169,40 @@ fn push_unique(list: &mut Vec<String>, origin: &str) {
 
 /// Reserved slot. Renders a live `<ins class="adsbygoogle">` when both
 /// publisher and unit IDs are set; otherwise a sized placeholder.
+thread_local! {
+    static CLAIMED: Cell<bool> = const { Cell::new(false) };
+    static ARMED: Cell<bool> = const { Cell::new(false) };
+}
+
+fn arm_ads() {
+    ARMED.with(|armed| {
+        if !armed.get() {
+            armed.set(true);
+            CLAIMED.with(|c| c.set(false));
+        }
+    });
+}
+
+pub fn finish_ads() {
+    ARMED.with(|armed| armed.set(false));
+}
+
+fn claim_page() -> bool {
+    arm_ads();
+    CLAIMED.with(|c| {
+        if c.get() {
+            return false;
+        }
+        c.set(true);
+        true
+    })
+}
+
 pub fn unit(kind: Placement) -> View {
     let live = client_id().zip(slot_id(kind));
+    if live.is_some() && !claim_page() {
+        return view! { <div hidden=""></div> };
+    }
     let class = kind.classes(live.is_some());
     let hint = kind.hint();
     match live {

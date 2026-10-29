@@ -29,19 +29,6 @@ pub fn page(_req: FlowRequest) -> View {
             </section>
             {crate::landing::sister_apps()}
         </main>
-
-        // Opened from the island via `__resuma.showModal("ad-download")` after export.
-        <Modal id="ad-download" closedBy="any" class="ad-download-dialog">
-            <div class="dialog-ad">
-                <form method="dialog">
-                    <button type="submit" class="dialog-close" aria-label="Close">"×"</button>
-                </form>
-                {ads::unit(Placement::Download)}
-                <p class="dialog-note">
-                    "Your file is downloading. Open the 3MF: filament 1 = Base, filament 2 = QR. Print at 0.16–0.20 mm, no supports."
-                </p>
-            </div>
-        </Modal>
     }
 }
 

@@ -295,7 +295,21 @@ pub fn chrome(body: View) -> View {
     chrome_with_ads(body, page_shows_ads())
 }
 
+fn view_transition_name(path: &str) -> String {
+    let slug = path.trim_matches('/');
+    if slug.is_empty() {
+        "home".into()
+    } else {
+        slug.replace('/', "-")
+    }
+}
+
 pub fn chrome_with_ads(body: View, ads: bool) -> View {
+    let vt = view_transition_name(
+        &current_request()
+            .map(|r| r.path)
+            .unwrap_or_else(|| "/".into()),
+    );
     let footer_ad = if ads {
         view! {
             <div class="ad-rail ad-rail-end">
@@ -305,17 +319,7 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
     } else {
         view! { <div hidden=""></div> }
     };
-    let toast_ad = if ads {
-        view! {
-            <div id="toast-ad" class="toast-ad" popover="manual" role="status">
-                {crate::ads::unit(crate::ads::Placement::Toast)}
-                <button type="button" class="toast-close" aria-label="Close ad">"×"</button>
-            </div>
-        }
-    } else {
-        view! { <div hidden=""></div> }
-    };
-    view! {
+    let view = view! {
         <div class="app">
             <div class="liquid-orbs" aria-hidden="true">
                 <div class="liquid-blob liquid-blob-a"></div>
@@ -338,7 +342,7 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
                 </nav>
                 <span class="nav-progress" aria-hidden="true"></span>
             </header>
-            {body}
+            {with_view_transition(vt, vec![Child::View(body)])}
             {footer_ad}
             <footer class="site-footer">
                 {seo_footer_links()}
@@ -348,9 +352,10 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
                     " — 3D-printable QR · no sign-up · we don’t keep your links"
                 </p>
             </footer>
-            {toast_ad}
         </div>
-    }
+    };
+    crate::ads::finish_ads();
+    view
 }
 
 pub fn seo_landing(kind: Landing) -> View {

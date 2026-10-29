@@ -827,32 +827,12 @@ const run = async (state, __resuma) => {
                 } else {
                     setStatus("Download ready");
                 }
-                const note = document.querySelector("#r-modal-ad-download .dialog-note");
-                if (note) {
-                    note.textContent = (fmt === "3mf" || fmt === "stl")
-                        ? "Your file is downloading. Open the 3MF: filament 1 = Base, filament 2 = QR. Print at 0.16–0.20 mm, no supports."
-                        : "Your file is downloading.";
-                }
-                try {
-                    const open = globalThis.__resuma?.showModal?.("ad-download");
-                    if (open && typeof open.then === "function") await open;
-                    globalThis.__placaqrFillAds?.(document.getElementById("r-modal-ad-download"));
-                } catch (_) {}
-                try {
-                    const toast = document.getElementById("toast-ad");
-                    toast?.showPopover?.();
-                    globalThis.__placaqrFillAds?.(toast);
-                } catch (_) {}
             } catch (err) {
                 setStatus(friendlyError(err), true);
             } finally {
                 exporting = false;
             }
         }
-    });
-
-    document.querySelector(".toast-close")?.addEventListener("click", () => {
-        document.getElementById("toast-ad")?.hidePopover?.();
     });
 
     root.addEventListener("placaqr:refresh", () => schedule());
@@ -947,8 +927,23 @@ whenReady().then(() => initPlacaqr({}, globalThis.__resuma)).catch((err) => {
 
 document.addEventListener("resuma:navigate", () => {
   document.documentElement.classList.remove("is-navigating");
+  const heading = document.querySelector("[data-r-vt] h1");
+  if (!heading) return;
+  heading.setAttribute("tabindex", "-1");
+  heading.focus({ preventScroll: true });
 });
 document.addEventListener("click", (e) => {
   const el = e.target instanceof Element ? e.target.closest("a[data-r-nav]") : null;
   if (el && el.getAttribute("href")) document.documentElement.classList.add("is-navigating");
 }, true);
+if (!window.__pqrVtGuard) {
+  window.__pqrVtGuard = true;
+  window.addEventListener("unhandledrejection", (e) => {
+    const err = e.reason;
+    const name = err && err.name;
+    const msg = (err && (err.message || String(err))) || "";
+    if (name === "AbortError" && /Transition was skipped|ViewTransition/i.test(msg)) {
+      e.preventDefault();
+    }
+  });
+}

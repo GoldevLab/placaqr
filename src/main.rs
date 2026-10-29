@@ -35,7 +35,7 @@ const HEAD: &str = r##"
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-<script type="module" src="/js/placaqr-ui.js?v=3"></script>
+<script type="module" src="/js/placaqr-ui.js?v=4"></script>
 <script type="module" src="/js/placaqr-fx.js?v=2"></script>
 "##;
 
@@ -99,22 +99,11 @@ async fn main() -> std::io::Result<()> {
                 .cookie("placaqr_theme")
                 .storage_key("placaqr-theme"),
         )
-        .with_stylesheet("/css/placaqr.css?v=r3")
+        .with_stylesheet("/css/placaqr.css?v=r4")
         .static_asset("/icon.svg", ICON, "image/svg+xml");
     {
-        let contact = crate::site::contact_email()
-            .map(|e| format!("Contact: mailto:{e}\n"))
-            .unwrap_or_default();
-        let origin = crate::landing::public_origin();
-        let body = format!(
-            "{contact}Canonical: {origin}/.well-known/security.txt\nPreferred-Languages: en\nExpires: 2027-12-31T23:59:59Z\n"
-        );
-        let leaked: &'static [u8] = Box::leak(body.into_bytes().into_boxed_slice());
-        app = app.static_asset(
-            "/.well-known/security.txt",
-            leaked,
-            "text/plain; charset=utf-8",
-        );
+        let contact = crate::site::contact_email();
+        app = app.with_security_txt(crate::landing::public_origin(), contact.as_deref());
     }
 
     if let Some(body) = ads_txt {
@@ -130,15 +119,15 @@ async fn main() -> std::io::Result<()> {
             background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-9".into(),
+            cache_version: "pqr-10".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),
             icon_char: Some("Q".into()),
             precache_paths: vec![
                 "/themes.css".into(),
-                "/css/placaqr.css?v=r3".into(),
-                "/js/placaqr-ui.js?v=3".into(),
+                "/css/placaqr.css?v=r4".into(),
+                "/js/placaqr-ui.js?v=4".into(),
                 "/js/placaqr-fx.js?v=2".into(),
                 "/js/placaqr-ads.js?v=2".into(),
                 "/icon.svg".into(),
