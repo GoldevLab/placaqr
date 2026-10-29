@@ -1,5 +1,6 @@
 /** PlacaQR island UI. Eager module load — Resuma visible_task waits for a footer marker. */
-let bootP = null;
+let bootGen = 0;
+let bootCleanup = null;
 
 const run = async (state, __resuma) => {
     const root = document.getElementById("placaqr-island");
@@ -790,7 +791,10 @@ const run = async (state, __resuma) => {
             setStatus("Preparing your file…");
             try {
                 await flushPreview();
-                if (!previewOk) return;
+                if (!previewOk) {
+                    setStatus("The preview is not ready yet. Wait a moment and download again.", true);
+                    return;
+                }
                 if (fmt === "png") {
                     let blob = null;
                     try {
@@ -891,15 +895,20 @@ const run = async (state, __resuma) => {
 };
 
 export function initPlacaqr(state, __resuma) {
-  if (!bootP) {
-    bootP = Promise.resolve(run(state || {}, __resuma || globalThis.__resuma)).catch((err) => {
-      bootP = null;
-      const root = document.getElementById("placaqr-island");
-      if (root) delete root.dataset.placaqrReady;
-      throw err;
-    });
-  }
-  return bootP;
+  const mine = ++bootGen;
+  return Promise.resolve(run(state || {}, __resuma || globalThis.__resuma)).then((done) => {
+    if (mine !== bootGen) {
+      if (typeof done === "function") done();
+      return;
+    }
+    bootCleanup = typeof done === "function" ? done : null;
+  }).catch((err) => {
+    if (mine !== bootGen) return;
+    bootCleanup = null;
+    const root = document.getElementById("placaqr-island");
+    if (root) delete root.dataset.placaqrReady;
+    throw err;
+  });
 }
 
 function whenReady() {
@@ -928,9 +937,22 @@ whenReady().then(() => initPlacaqr({}, globalThis.__resuma)).catch((err) => {
 document.addEventListener("resuma:navigate", () => {
   document.documentElement.classList.remove("is-navigating");
   const heading = document.querySelector("[data-r-vt] h1");
-  if (!heading) return;
-  heading.setAttribute("tabindex", "-1");
-  heading.focus({ preventScroll: true });
+  if (heading) {
+    heading.setAttribute("tabindex", "-1");
+    heading.focus({ preventScroll: true });
+  }
+  bootGen += 1;
+  if (typeof bootCleanup === "function") {
+    try { bootCleanup(); } catch (_) {}
+  }
+  bootCleanup = null;
+  const island = document.getElementById("placaqr-island");
+  if (island) {
+    delete island.dataset.placaqrReady;
+    initPlacaqr({}, globalThis.__resuma).catch((err) => {
+      console.error("[placaqr] ui", err);
+    });
+  }
 });
 document.addEventListener("click", (e) => {
   const el = e.target instanceof Element ? e.target.closest("a[data-r-nav]") : null;

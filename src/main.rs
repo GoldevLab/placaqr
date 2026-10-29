@@ -35,7 +35,7 @@ const HEAD: &str = r##"
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-<script type="module" src="/js/placaqr-ui.js?v=4"></script>
+<script type="module" src="/js/placaqr-ui.js?v=5"></script>
 <script type="module" src="/js/placaqr-fx.js?v=2"></script>
 "##;
 
@@ -99,7 +99,7 @@ async fn main() -> std::io::Result<()> {
                 .cookie("placaqr_theme")
                 .storage_key("placaqr-theme"),
         )
-        .with_stylesheet("/css/placaqr.css?v=r4")
+        .with_stylesheet("/css/placaqr.css?v=r5")
         .static_asset("/icon.svg", ICON, "image/svg+xml");
     {
         let contact = crate::site::contact_email();
@@ -119,15 +119,15 @@ async fn main() -> std::io::Result<()> {
             background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-10".into(),
+            cache_version: "pqr-11".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),
             icon_char: Some("Q".into()),
             precache_paths: vec![
                 "/themes.css".into(),
-                "/css/placaqr.css?v=r4".into(),
-                "/js/placaqr-ui.js?v=4".into(),
+                "/css/placaqr.css?v=r5".into(),
+                "/js/placaqr-ui.js?v=5".into(),
                 "/js/placaqr-fx.js?v=2".into(),
                 "/js/placaqr-ads.js?v=2".into(),
                 "/icon.svg".into(),

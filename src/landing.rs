@@ -319,7 +319,7 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
     } else {
         view! { <div hidden=""></div> }
     };
-    let view = view! {
+    view! {
         <div class="app">
             <div class="liquid-orbs" aria-hidden="true">
                 <div class="liquid-blob liquid-blob-a"></div>
@@ -353,9 +353,7 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
                 </p>
             </footer>
         </div>
-    };
-    crate::ads::finish_ads();
-    view
+    }
 }
 
 pub fn seo_landing(kind: Landing) -> View {
@@ -363,7 +361,6 @@ pub fn seo_landing(kind: Landing) -> View {
     set_page_description(kind.description());
     set_page_canonical(canonical_url(kind.path()));
     let faq_ld = json!({
-        "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": kind.faq().iter().map(|(q, a)| json!({
             "@type": "Question",

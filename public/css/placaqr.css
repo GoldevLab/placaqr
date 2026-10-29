@@ -1292,6 +1292,7 @@ main {
   padding: 0.55rem 0 0;
 }
 
+.ad-rail:has(> [hidden]) { display: none; }
 .ad-unit {
   display: grid;
   place-items: center;

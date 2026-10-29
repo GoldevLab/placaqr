@@ -171,24 +171,14 @@ fn push_unique(list: &mut Vec<String>, origin: &str) {
 /// publisher and unit IDs are set; otherwise a sized placeholder.
 thread_local! {
     static CLAIMED: Cell<bool> = const { Cell::new(false) };
-    static ARMED: Cell<bool> = const { Cell::new(false) };
 }
 
-fn arm_ads() {
-    ARMED.with(|armed| {
-        if !armed.get() {
-            armed.set(true);
-            CLAIMED.with(|c| c.set(false));
-        }
-    });
-}
-
-pub fn finish_ads() {
-    ARMED.with(|armed| armed.set(false));
+/// Clear the one-unit flag before the page view is built.
+pub fn begin_page() {
+    CLAIMED.with(|c| c.set(false));
 }
 
 fn claim_page() -> bool {
-    arm_ads();
     CLAIMED.with(|c| {
         if c.get() {
             return false;
@@ -196,6 +186,12 @@ fn claim_page() -> bool {
         c.set(true);
         true
     })
+}
+
+#[middleware]
+async fn reset_ad_slot(req: FlowRequest) -> Result<FlowRequest> {
+    begin_page();
+    Ok(req)
 }
 
 pub fn unit(kind: Placement) -> View {
