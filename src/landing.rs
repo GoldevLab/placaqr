@@ -288,7 +288,7 @@ fn page_shows_ads() -> bool {
         .unwrap_or_else(|| "/".into());
     let trimmed = path.trim_end_matches('/');
     let path = if trimmed.is_empty() { "/" } else { trimmed };
-    !matches!(path, "/privacy" | "/terms")
+    !matches!(path, "/privacy" | "/terms" | "/admin")
 }
 
 pub fn chrome(body: View) -> View {
@@ -310,6 +310,33 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
             .map(|r| r.path)
             .unwrap_or_else(|| "/".into()),
     );
+    let stats_bar = if crate::site::request_is_admin() {
+        let activity = crate::stats::snapshot();
+        let three_mf = crate::stats::grouped(activity.three_mf);
+        let stl = crate::stats::grouped(activity.stl);
+        let png = crate::stats::grouped(activity.png);
+        let svg = crate::stats::grouped(activity.svg);
+        let stand = crate::stats::grouped(activity.stand);
+        let tile = crate::stats::grouped(activity.tile);
+        let keychain = crate::stats::grouped(activity.keychain);
+        let plaque = crate::stats::grouped(activity.plaque);
+        let coin = crate::stats::grouped(activity.coin);
+        view! {
+            <div class="live-stats" aria-live="polite" aria-label="Completed downloads">
+                <span class="live-stat">"3MF "<strong>{three_mf}</strong></span>
+                <span class="live-stat">"STL "<strong>{stl}</strong></span>
+                <span class="live-stat">"PNG "<strong>{png}</strong></span>
+                <span class="live-stat">"SVG "<strong>{svg}</strong></span>
+                <span class="live-stat">"Stand "<strong>{stand}</strong></span>
+                <span class="live-stat">"Tile "<strong>{tile}</strong></span>
+                <span class="live-stat">"Keychain "<strong>{keychain}</strong></span>
+                <span class="live-stat">"Plaque "<strong>{plaque}</strong></span>
+                <span class="live-stat">"Coin "<strong>{coin}</strong></span>
+            </div>
+        }
+    } else {
+        view! { <div hidden=""></div> }
+    };
     let footer_ad = if ads {
         view! {
             <div class="ad-rail ad-rail-end">
@@ -332,6 +359,7 @@ pub fn chrome_with_ads(body: View, ads: bool) -> View {
                         <span class="brand-mark" aria-hidden="true"></span>
                         <span class="brand-name">"PlacaQR"</span>
                     </NavLink>
+                    {stats_bar}
                 </div>
                 <nav class="site-nav" aria-label="Objects">
                     <NavLink href="/3d-printable-qr" class="site-nav-link" activeClass="is-active">"3D QR"</NavLink>

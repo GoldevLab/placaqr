@@ -19,6 +19,12 @@ primary_region = "iad"
   ADSENSE_SLOT = "4857783384"
   CARGO_MANIFEST_DIR = "/app"
 
+# Counter file and the admin session key. Survives a deploy.
+[[mounts]]
+  source = "placaqr_data"
+  destination = "/data"
+  initial_size = "1gb"
+
 [http_service]
   internal_port = 8080
   force_https = true

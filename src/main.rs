@@ -1,6 +1,7 @@
 //! PlacaQR — 3D-printable QR generator in pure Rust (Resuma Flow).
 
 mod actions;
+mod admin_gate;
 mod ads;
 mod guides;
 mod landing;
@@ -13,11 +14,42 @@ mod payload;
 mod preview;
 mod qr_gen;
 mod site;
+mod stats;
 mod tool;
 
+use axum::http::{header, HeaderMap, HeaderValue, StatusCode};
+use axum::response::IntoResponse;
+use axum::routing::get;
 use pages::PagesRegistry;
 use resuma::prelude::*;
 use resuma::SeoKit;
+
+async fn stats_api(headers: HeaderMap) -> axum::response::Response {
+    if !crate::admin_gate::cookie_session_valid(
+        headers.get(header::COOKIE).and_then(|v| v.to_str().ok()),
+    ) {
+        return StatusCode::NOT_FOUND.into_response();
+    }
+    let body = serde_json::to_string(&crate::stats::snapshot()).unwrap_or_else(|_| "{}".into());
+    let mut extra = HeaderMap::new();
+    extra.insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_static("application/json; charset=utf-8"),
+    );
+    extra.insert(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("no-store"),
+    );
+    extra.insert(
+        header::HeaderName::from_static("x-robots-tag"),
+        HeaderValue::from_static("noindex"),
+    );
+    (StatusCode::OK, extra, body).into_response()
+}
+
+async fn stats_preflight() -> axum::response::Response {
+    StatusCode::NO_CONTENT.into_response()
+}
 fn placa_not_found() -> View {
     crate::landing::chrome_with_ads(view! {
         <main class="content-section">
@@ -35,7 +67,7 @@ const HEAD: &str = r##"
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-<script type="module" src="/js/placaqr-ui.js?v=5"></script>
+<script type="module" src="/js/placaqr-ui.js?v=6"></script>
 <script type="module" src="/js/placaqr-fx.js?v=2"></script>
 "##;
 
@@ -63,6 +95,7 @@ fn seo_kit() -> SeoKit {
             "/ is the generator. /3d-printable-qr /google-reviews-qr /wifi-qr-print /qr-keychain-3mf. Guides: /guides, /guides/3d-printable-qr, /guides/google-reviews-qr, /guides/wifi-qr, /guides/qr-keychain. /extension /privacy /terms. The canonical origin is SITE_URL (fly.dev until a custom domain is set).".into(),
         ),
     ];
+    kit.ai.disallow = vec!["/admin".into()];
     kit
 }
 
@@ -99,7 +132,8 @@ async fn main() -> std::io::Result<()> {
                 .cookie("placaqr_theme")
                 .storage_key("placaqr-theme"),
         )
-        .with_stylesheet("/css/placaqr.css?v=r5")
+        .with_stylesheet("/css/placaqr.css?v=r6")
+        .with_sitemap_exclude(["/admin"])
         .static_asset("/icon.svg", ICON, "image/svg+xml");
     {
         let contact = crate::site::contact_email();
@@ -119,15 +153,15 @@ async fn main() -> std::io::Result<()> {
             background_color: "#12081c".into(),
             start_url: "/".into(),
             scope: "/".into(),
-            cache_version: "pqr-11".into(),
+            cache_version: "pqr-12".into(),
             display: "standalone".into(),
             orientation: "any".into(),
             lang: "en".into(),
             icon_char: Some("Q".into()),
             precache_paths: vec![
                 "/themes.css".into(),
-                "/css/placaqr.css?v=r5".into(),
-                "/js/placaqr-ui.js?v=5".into(),
+                "/css/placaqr.css?v=r6".into(),
+                "/js/placaqr-ui.js?v=6".into(),
                 "/js/placaqr-fx.js?v=2".into(),
                 "/js/placaqr-ads.js?v=2".into(),
                 "/icon.svg".into(),
@@ -146,6 +180,7 @@ async fn main() -> std::io::Result<()> {
                     .into(),
             manifest_icons: Vec::new(),
         })
+        .route("/api/stats", get(stats_api).options(stats_preflight))
         .not_found(placa_not_found)
         .auto_pages(
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/pages"),

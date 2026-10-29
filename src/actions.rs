@@ -64,7 +64,7 @@ async fn preview_design(spec: DesignSpec) -> Result<PreviewResult> {
 async fn export_design(spec: DesignSpec, format: String) -> Result<ExportResult> {
     check_spec(&spec)?;
     let qr = qr_gen::encode(&spec.payload).map_err(ResumaError::Validation)?;
-    match format.as_str() {
+    let result = match format.as_str() {
         "3mf" => {
             let model = build_model(&spec, &qr);
             let (filename, base64) = export_3mf_base64(&model).map_err(ResumaError::Validation)?;
@@ -101,7 +101,61 @@ async fn export_design(spec: DesignSpec, format: String) -> Result<ExportResult>
             })
         }
         other => Err(ResumaError::Validation(format!("Unknown format: {other}"))),
+    };
+    if result.is_ok() {
+        crate::stats::record_export(&format, &spec.object);
     }
+    result
+}
+
+#[server]
+async fn note_export(object: String, format: String) -> Result<()> {
+    if format != "png" {
+        return Ok(());
+    }
+    let ip = current_request()
+        .map(|req| crate::admin_gate::client_ip(&req))
+        .unwrap_or_else(|| "unknown".into());
+    if !crate::stats::allow_local_note(&ip) {
+        return Ok(());
+    }
+    crate::stats::record_export(&format, &object);
+    Ok(())
+}
+
+#[data]
+pub struct AdminLogin {
+    user: String,
+    password: String,
+}
+
+#[submit]
+pub async fn admin_login(
+    form: AdminLogin,
+    req: &FlowRequest,
+) -> std::result::Result<Redirect, SubmitError> {
+    if !crate::admin_gate::allow_login(&crate::admin_gate::client_ip(req)) {
+        return Err(SubmitError::new(
+            "Demasiados intentos. Espera unos minutos.",
+        ));
+    }
+    if !crate::admin_gate::admin_login_ok(&form.user, &form.password) {
+        return Ok(redirect("/admin?e=1"));
+    }
+    Ok(redirect("/admin").with_cookie(crate::site::admin_cookie_header()))
+}
+
+#[data]
+pub struct AdminLogout {
+    ok: Option<String>,
+}
+
+#[submit]
+pub async fn admin_logout(
+    _form: AdminLogout,
+    _req: &FlowRequest,
+) -> std::result::Result<Redirect, SubmitError> {
+    Ok(redirect("/admin").with_cookie(crate::site::admin_clear_cookie()))
 }
 
 #[cfg(test)]

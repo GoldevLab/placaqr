@@ -1,5 +1,35 @@
 //! Optional env: CONTACT_EMAIL, GSC_VERIFICATION, GA4_ID, PLAUSIBLE_DOMAIN.
 
+use resuma::prelude::*;
+
+pub fn request_is_admin() -> bool {
+    current_request()
+        .map(|req| crate::admin_gate::cookie_session_valid(req.header("cookie")))
+        .unwrap_or(false)
+}
+
+pub fn admin_cookie_header() -> String {
+    session_cookie(
+        &crate::admin_gate::issue_admin_session(),
+        crate::admin_gate::ADMIN_SESSION_SECS as i64,
+    )
+}
+
+pub fn admin_clear_cookie() -> String {
+    session_cookie("", 0)
+}
+
+fn session_cookie(value: &str, max_age: i64) -> String {
+    let mut header = format!(
+        "{}={value}; Path=/; Max-Age={max_age}; HttpOnly; SameSite=Lax",
+        crate::admin_gate::ADMIN_COOKIE
+    );
+    if crate::landing::public_origin().starts_with("https://") {
+        header.push_str("; Secure");
+    }
+    header
+}
+
 pub fn contact_email() -> Option<String> {
     std::env::var("CONTACT_EMAIL")
         .ok()

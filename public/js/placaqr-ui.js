@@ -815,6 +815,9 @@ const run = async (state, __resuma) => {
                     }
                     if (blob) {
                         saveBlob(blob, "placaqr.png");
+                        try {
+                            await __resuma.action("note_export", [buildSpec().object || "", "png"]);
+                        } catch (_) {}
                     } else {
                         const r = await __resuma.action("export_design", [buildSpec(), "png"]);
                         saveBlob(new Blob([bytesFromB64(r.base64)], { type: r.mime }), r.filename);

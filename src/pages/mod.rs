@@ -1,3 +1,4 @@
+pub mod admin;
 pub mod extension;
 pub mod guide_keychain;
 pub mod guide_print;
